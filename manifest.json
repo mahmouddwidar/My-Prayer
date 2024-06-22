@@ -19,6 +19,18 @@
     },
 
     "permissions": [
-        "storage"
+        "storage",
+        "geolocation"
+    ],
+
+    "content_scripts": [
+        {
+            "js": [
+                "popup/main.js"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
     ]
 }

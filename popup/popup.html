@@ -13,25 +13,26 @@
     <div class="d-flex justify-content-center align-items-center">
         <div class="salat bg-dark bg-gradientbg-dark bg-gradient w-75 p-2 px-3 ">
             <div class="titles d-flex justify-content-between align-items-center">
-                <h3 class="fs-5">Midnight</h3>
-                <h3 class="fs-5">Fajr</h3>
+                <h3 id="previousPrayer" class="fs-5">Previous</h3>
+                <h3 id="nextPrayer" class="fs-5">Next</h3>
             </div>
-            <div class="progress my-2" role="progressbar" aria-label="Basic example" aria-valuenow="75" aria-valuemin="0"
-                aria-valuemax="100">
-                <div class="progress-bar w-75 text-black">30 Mins.</div>
+            <div class="progress my-2" role="progressbar" aria-label="Basic example"
+                aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar p-1 text-black">Calculating...</div>
             </div>
             <div class="times d-flex justify-content-between align-items-center pt-2">
-                <h3 class="fs-5 me-4">12:00 AM</h3>
-                <h3 class="fs-5 ms-4">4:14 Am</h3>
+                <h3 id="previous-time" class="fs-5 me-4">Loading...</h3>
+                <h3 id="next-time" class="fs-5 ms-4">Loading...</h3>
             </div>
         </div>
         <div class="date shadow-lg bg-warning bg-gradient text-black text-center px-1">
-            <h6 class="fs-6 pb-2 pt-1">Saturday</h6>
-            <h1 class="pt-2">16</h1>
-            <h6 class="fs-6 pt-3">Dhul Hijja</h6>
+            <h6 id="day" class="fs-6 pb-2 pt-1">Loading...</h6>
+            <h1 id="date" class="pt-2">...</h1>
+            <h6 id="month" class="fs-6 pt-3">Loading...</h6>
         </div>
     </div>
     <script src="bootstrap.bundle.js"></script>
+    <script src="main.js"></script>
 </body>
 
 </html>
