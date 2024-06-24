@@ -2,7 +2,7 @@
 
 ![My Prayer Logo](./imgs/icon-128.png)
 
-**My Prayer** is a browser extension designed to provide accurate prayer times based on your current geographical location. Whether you're at home or traveling, stay connected to your daily prayers effortlessly.
+**My Prayer** is a browser extension designed to provide prayer times based on your current geographical location. Whether you're at home or traveling, stay connected to your daily prayers effortlessly.
 
 ## Features
 
