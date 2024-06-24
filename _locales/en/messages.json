@@ -1,0 +1,10 @@
+{
+    "extensionDescription": {
+        "message": "prayer times based on your location.",
+        "description": "Description of the extension"
+    },
+    "commandDescription": {
+        "message": "Open My Prayer popup",
+        "description": "Description for the command to open the popup"
+    }
+}

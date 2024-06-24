@@ -1,8 +1,9 @@
 {
     "manifest_version": 3,
     "name": "My Prayer",
-    "description": "Find Prayers Times in Your Location",
     "version": "1.0.0",
+    "default_locale": "en",
+    "description": "__MSG_extensionDescription__",
     "action": {
         "default_popup": "popup/popup.html"
     },
@@ -10,27 +11,50 @@
         "16": "imgs/icon-16.png",
         "32": "imgs/icon-32.png",
         "64": "imgs/icon-64.png",
-        "128": "imgs/icon-128.png"
+        "128": "imgs/icon-128.png",
+        "256": "imgs/icon-256.png"
     },
-
     "background": {
         "service_worker": "background.js",
         "type": "module"
     },
-
     "permissions": [
         "storage",
         "geolocation"
     ],
-
     "content_scripts": [
         {
             "js": [
-                "popup/main.js"
+                "popup/content.js"
             ],
             "matches": [
                 "<all_urls>"
             ]
         }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "imgs/*"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
+    ],
+    "commands": {
+        "open_popup": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+Y"
+            },
+            "description": "__MSG_commandDescription__"
+        }
+    },
+    "optional_permissions": [
+        "notifications"
+    ],
+    "host_permissions": [
+        "https://api.aladhan.com/*",
+        "https://api.bigdatacloud.net/*"
     ]
 }

@@ -1,0 +1,10 @@
+{
+    "extensionDescription": {
+        "message": "أوقات الصلاة بناءً على موقعك.",
+        "description": "وصف الإضافة"
+    },
+    "commandDescription": {
+        "message": "فتح نافذة موجهة My Prayer",
+        "description": "وصف للأمر لفتح النافذة المنبثقة"
+    }
+}
