@@ -113,19 +113,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updateProgressBar(currentTime, nextPrayerTime, previousPrayerTime) {
         const timeDiff = nextPrayerTime - currentTime;
-
+        console.log(timeDiff);
+    
         let totalTime = nextPrayerTime - previousPrayerTime;
-
+    
+        // Adjust totalTime for overnight prayer times
+        if (totalTime < 0) {
+            totalTime += 24 * 60 * 60 * 1000; // Add 24 hours in milliseconds
+        }
+    
         const progressBar = document.querySelector(".progress-bar");
         const progressBarBackground = document.querySelector(".progress");
         const progress = 100 - (timeDiff / totalTime) * 100;
-
+    
         progressBar.style.width = `${progress}%`;
-
+    
         const totalSeconds = Math.floor(timeDiff / 1000);
         const hours = Math.floor(totalSeconds / 3600);
         const minutes = Math.floor((totalSeconds % 3600) / 60);
-
+    
         if (hours > 0) {
             progressBar.textContent = `${hours} hr ${minutes} min`;
             progressBar.setAttribute("title", `${hours} hr ${minutes} min`);
@@ -136,6 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
             progressBarBackground.setAttribute("title", `${minutes} min`);
         }
     }
+    
 
 	setInterval(() => {
 		updatePrayerTimes(todayPrayerTimes);

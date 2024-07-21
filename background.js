@@ -58,4 +58,4 @@ function checkAndUpdateTimings() {
     });
 }
 
-setInterval(checkAndUpdateTimings, 60000);
+setInterval(checkAndUpdateTimings, 1000);
