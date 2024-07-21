@@ -1,5 +1,6 @@
 export default function fetchTimes(latitude, longitude, method) {
 	const todayUrl = `https://api.aladhan.com/v1/timings?latitude=${latitude}&longitude=${longitude}&method=${method}`;
+	const currentDate = new Date().toDateString();
 	return fetch(todayUrl)
 		.then((response) => response.json())
 		.then((data) => {
@@ -9,6 +10,7 @@ export default function fetchTimes(latitude, longitude, method) {
 				hijri_month: data.data.date.hijri.month.en,
 				gregorian_day: data.data.date.gregorian.weekday.en,
 			});
+			chrome.storage.local.set({ lastUpdated: currentDate });
 		})
 		.catch((error) => {
 			console.error("Error fetching country data: ", error);

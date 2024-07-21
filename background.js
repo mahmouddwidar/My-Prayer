@@ -49,4 +49,13 @@ function getMethodByCountry(countryCode) {
 	return methods[countryCode] || 3; // Default to Muslim World League
 }
 
-setInterval(updateTimings, 24 * 60 * 60 * 1000);
+function checkAndUpdateTimings() {
+    chrome.storage.local.get(["lastUpdated"], (result) => {
+		const currentDate = new Date().toDateString();
+		if (result.lastUpdated !== currentDate) {
+			updateTimings(currentDate);
+        }
+    });
+}
+
+setInterval(checkAndUpdateTimings, 60000);

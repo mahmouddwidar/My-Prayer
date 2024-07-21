@@ -49,13 +49,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         for (let i = 0; i < prayerTimes.length; i++) {
             const prayerDate = parseTimeToDate(prayerTimes[i].time, prayerTimes[i].name === "Fajr");
-            console.log("current: ", currentTime);
-            console.log(prayerDate);
             if (currentTime < prayerDate) {
                 nextPrayer = prayerTimes[i];
                 previousPrayer = i === 0 ? prayerTimes[prayerTimes.length - 1] : prayerTimes[i - 1];
-                console.log("Next: ", nextPrayer);
-                console.log("Previous: ", previousPrayer);
                 break;
             }
         }
@@ -117,7 +113,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updateProgressBar(currentTime, nextPrayerTime, previousPrayerTime) {
         const timeDiff = nextPrayerTime - currentTime;
-        console.log(nextPrayerTime);
 
         let totalTime = nextPrayerTime - previousPrayerTime;
 
