@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let nextPrayer, previousPrayer;
 
         for (let i = 0; i < prayerTimes.length; i++) {
-            const prayerDate = parseTimeToDate(prayerTimes[i].time, prayerTimes[i].name === "Fajr");
+            const prayerDate = parseTimeToDate(prayerTimes[i].time, prayerTimes[i].name);
             if (currentTime < prayerDate) {
                 nextPrayer = prayerTimes[i];
                 previousPrayer = i === 0 ? prayerTimes[prayerTimes.length - 1] : prayerTimes[i - 1];
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         updateProgressBar(
             currentTime,
-            parseTimeToDate(nextPrayer.time, nextPrayer.name === "Fajr"),
+            parseTimeToDate(nextPrayer.time),
             parseTimeToDate(previousPrayer.time)
         );
     }
@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		document.getElementById('month').textContent = `${dates.hijri_month}`;
 	}
 
-    function parseTimeToDate(time, isNextDay = false) {
+    function parseTimeToDate(time) {
         const [timeString, period] = time.split(" ");
         const [hours, minutes] = timeString.split(":");
         let hour = parseInt(hours);
@@ -88,9 +88,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const date = new Date();
         date.setHours(hour, parseInt(minutes), 0, 0);
-        if (isNextDay && hour < new Date().getHours()) {
-            date.setDate(date.getDate() + 1);
-        }
+
         return date;
     }
 
@@ -113,13 +111,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updateProgressBar(currentTime, nextPrayerTime, previousPrayerTime) {
         const timeDiff = nextPrayerTime - currentTime;
-        console.log(timeDiff);
     
         let totalTime = nextPrayerTime - previousPrayerTime;
     
         // Adjust totalTime for overnight prayer times
         if (totalTime < 0) {
-            totalTime += 24 * 60 * 60 * 1000; // Add 24 hours in milliseconds
+            totalTime += 24 * 60 * 60 * 1000;
         }
     
         const progressBar = document.querySelector(".progress-bar");
