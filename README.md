@@ -34,7 +34,7 @@ Once installed, the extension automatically detects your location to provide pra
 ## Changelog
 
 ### Version 1.0.1
-- Fixed a bug with the remaining time, which was giving a negative value between Fajr and Sunrise prayers.
+- Fixed a bug with the remaining time, which was giving a negative value between Isha and Fajr prayers.
 - Improved the performance of the extension.
 
 ## Contribution
