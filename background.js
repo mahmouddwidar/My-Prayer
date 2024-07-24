@@ -50,12 +50,12 @@ function getMethodByCountry(countryCode) {
 }
 
 function checkAndUpdateTimings() {
-    chrome.storage.local.get(["lastUpdated"], (result) => {
+	chrome.storage.local.get(["lastUpdated"], (result) => {
 		const currentDate = new Date().toDateString();
 		if (result.lastUpdated !== currentDate) {
 			updateTimings(currentDate);
-        }
-    });
+		}
+	});
 }
 
 setInterval(checkAndUpdateTimings, 1000);
