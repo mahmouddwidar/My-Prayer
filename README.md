@@ -6,17 +6,16 @@
 
 ## Features
 
-- **Automatic Prayer Times**: Fetches precise prayer timings based on your geographic location.
+- **Automatic Prayer Times**: Fetches prayer timings based on your geographic location.
 - **Hijri Date**: Displays Hijri calendars for convenience.
 - **Multiple Calculation Methods**: Get calculation method based on your geographic location.
 - **Simple and Clear Interface**: User-friendly interface for quick access to essential prayer information.
-- **Customizable Keyboard Shortcuts**: Access prayer times swiftly using customizable keyboard shortcuts.
 
 ## Installation
 
 To install the extension, follow these steps:
 
-1. Download the extension files.
+1. Download the extension files from [here](https://github.com/mahmouddwidar/My-Prayer/archive/refs/heads/main.zip) or clone the repo.
 2. Open your browser and go to the extensions management page (e.g., chrome://extensions/ for Chrome).
 3. Enable Developer mode.
 4. Click on "Load unpacked" and select the downloaded extension folder.
