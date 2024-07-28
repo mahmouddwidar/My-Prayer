@@ -12,19 +12,30 @@ chrome.runtime.onInstalled.addListener((details) => {
 	updateTimings();
 });
 
-function updateTimings() {
-	chrome.storage.local.get(["latitude", "longitude"], (result) => {
-		if (result.latitude && result.longitude) {
-			fetchCountry(result.latitude, result.longitude).then((countryCode) => {
-				fetchTimes(
-					result.latitude,
-					result.longitude,
-					getMethodByCountry(countryCode)
-				);
-			});
-		} else {
-			console.log("No location data found");
-		}
+function updateTimings(currentDate) {
+	return new Promise((resolve, reject) => {
+		chrome.storage.local.get(["latitude", "longitude"], (result) => {
+			if (result.latitude && result.longitude) {
+				fetchCountry(result.latitude, result.longitude)
+					.then((countryCode) => {
+						return fetchTimes(
+							result.latitude,
+							result.longitude,
+							getMethodByCountry(countryCode)
+						);
+					})
+					.then(() => {
+						chrome.storage.local.set({ lastUpdated: currentDate }, resolve);
+					})
+					.catch((error) => {
+						console.error("Error updating timings: ", error);
+						reject(error);
+					});
+			} else {
+				console.log("No location data found");
+				reject(new Error("No location data found"));
+			}
+		});
 	});
 }
 
@@ -51,9 +62,10 @@ function getMethodByCountry(countryCode) {
 
 function checkAndUpdateTimings() {
 	chrome.storage.local.get(["lastUpdated"], (result) => {
-		const currentDate = new Date().toDateString();
-		if (result.lastUpdated !== currentDate) {
-			updateTimings(currentDate);
+		const currentDate = new Date();
+		const lastUpdatedDate = new Date(result.lastUpdated);
+		if (currentDate.getDate() !== lastUpdatedDate.getDate()) {
+			updateTimings(currentDate.toDateString());
 		}
 	});
 }
