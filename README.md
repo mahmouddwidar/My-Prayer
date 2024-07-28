@@ -32,9 +32,8 @@ Once installed, the extension automatically detects your location to provide pra
 
 ## Changelog
 
-### Version 1.0.1
-- Fixed a bug with the remaining time, which was giving a negative value between Isha and Fajr prayers.
-- Improved the performance of the extension.
+### Version 1.0.2
+- Fixed bug not updating the dates and timings daily.
 
 ## Contribution
 
