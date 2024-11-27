@@ -40,7 +40,6 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 	}
 });
 
-// chrome.alarms.onAlarm.addListener((alarm) => {
 //     if (alarm.name === "dailyPrayerUpdate") {
 //         console.log("Daily prayer time update triggered.");
 //         const currentDate = new Date().toDateString();
@@ -116,15 +115,6 @@ function schedulePrayerAlarm(prayer, timestamp) {
 	chrome.alarms.create(`prayer-${prayer}`, { when: timestamp });
 	console.log(`Alarm set for ${prayer} at ${new Date(timestamp)}`);
 }
-
-// chrome.alarms.onAlarm.addListener((alarm) => {
-//     if (alarm.name.startsWith("prayer-")) {
-//         const prayerName = alarm.name.replace("prayer-", "");
-//         showPrayerNotification(prayerName);
-//     }
-// });
-
-// schedulePrayerAlarm("testPrayer", Date.now() + 5000); // 5 seconds from now
 
 function showPrayerNotification(prayerName) {
 	chrome.notifications.create({
