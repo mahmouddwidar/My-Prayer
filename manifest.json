@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "My Prayer",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "default_locale": "en",
     "description": "__MSG_extensionDescription__",
     "action": {
@@ -20,7 +20,9 @@
     },
     "permissions": [
         "storage",
-        "geolocation"
+        "geolocation",
+        "alarms",
+        "notifications"
     ],
     "content_scripts": [
         {
@@ -50,9 +52,6 @@
             "description": "__MSG_commandDescription__"
         }
     },
-    "optional_permissions": [
-        "notifications"
-    ],
     "host_permissions": [
         "https://api.aladhan.com/*",
         "https://api.bigdatacloud.net/*"
