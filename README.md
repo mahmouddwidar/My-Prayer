@@ -10,19 +10,17 @@
 - **Hijri Date**: Displays Hijri calendars for convenience.
 - **Multiple Calculation Methods**: Get calculation method based on your geographic location.
 - **Simple and Clear Interface**: User-friendly interface for quick access to essential prayer information.
-- **Prayer Notifications**: (Planned) Receive notifications when prayer times occur.
+- **Prayer Notifications**: Receive notifications when prayer times occur.
 - **Time Between Adhan and Iqamah**: (Planned) A countdown timer showing time remaining between Adhan (Azan) and Iqamah.
 
-## Known Issues
+<!-- ## Known Issues
 
 - **Service Worker**: Currently, the service worker does not update prayer times consistently on a daily basis. We're investigating a fix for more reliable updates.
-- **Responsiveness**: The design needs improvements to be fully responsive.
+- **Responsiveness**: The design needs improvements to be fully responsive. -->
 
 ## Planned Features
 
-- **Notifications**: Implement notifications to alert users when prayer time hits.
 - **Adhan to Iqamah Timer**: A timer between Adhan and Iqamah to help users prepare for prayers.
-- **Better Responsiveness**: Improvements in the UI/UX for better adaptability.
   
 ## Installation
 
@@ -45,8 +43,9 @@ Once installed, the extension automatically detects your location to provide pra
 
 ## Changelog
 
-### Version 1.0.2
-- Fixed bug not updating the dates and timings daily.
+### Version 1.0.3
+- Send notification to alert users when prayer time hits.
+- Improvements in the UI/UX for better adaptability.
 
 ## Contribution
 
