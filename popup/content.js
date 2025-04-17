@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		navigator.geolocation.getCurrentPosition(onSuccess, onError);
 	} else {
 		alert("Geolocation is not supported by your browser");
-		console.log("Geolocation is not supported by your browser");
+		console.error("Geolocation is not supported by your browser");
 	}
 
 	function onSuccess(position) {
@@ -26,6 +26,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	async function getAllTimings() {
 		const result = await chrome.storage.local.get(["timings"]);
+		if (!result.timings) {
+			console.error("No timings found in storage.");
+			return;
+		}
 		const dates = await chrome.storage.local.get([
 			"hijri_day",
 			"hijri_month",
@@ -119,7 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			hour -= 12;
 		}
 
-		return `${hour}:${minutes} ${period}`;
+		return `${hour}:${minutes.padStart(2, "0")} ${period}`;
 	}
 
 	function updateProgressBar(currentTime, nextPrayerTime, previousPrayerTime) {
@@ -157,8 +161,30 @@ document.addEventListener("DOMContentLoaded", () => {
 		}
 	}
 
+	// Notification Button
+	const checkbox = document.getElementById("notification");
+
+	// Load and apply the saved notification setting
+	chrome.storage.local.get("options", (result) => {
+		let options = result.options || {};
+
+		if (options.notification === undefined) {
+			options.notification = true; // Default Value
+			chrome.storage.local.set({ options });
+		}
+
+		checkbox.checked = options.notification;
+	});
+
+	checkbox.addEventListener("change", async (e) => {
+		const newValue = e.target.checked;
+		await chrome.storage.local.set({ options: { notification: newValue } });
+	});
+
 	setInterval(() => {
-		updatePrayerTimes(todayPrayerTimes);
-		updateDates(todayDates);
+		if (todayPrayerTimes && todayDates) {
+			updatePrayerTimes(todayPrayerTimes);
+			updateDates(todayDates);
+		}
 	}, 1000);
 });

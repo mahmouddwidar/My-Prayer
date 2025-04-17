@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="bootstrap.min.css">
     <link rel="stylesheet" href="popup.css">
     <title>Pray Times</title>
 </head>
@@ -16,22 +15,26 @@
                 <h3 id="previousPrayer">Previous</h3>
                 <h3 id="nextPrayer">Next</h3>
             </div>
-            <div class="progress" role="progressbar" aria-label="Basic example"
-                aria-valuemin="0" aria-valuemax="100">
+            <div class="progress" role="progressbar" aria-label="Basic example" aria-valuemin="0" aria-valuemax="100">
                 <div class="progress-bar">Calculating...</div>
             </div>
             <div class="times">
-                <h3 id="previous-time" >Loading...</h3>
+                <h3 id="previous-time">Loading...</h3>
                 <h3 id="next-time">Loading...</h3>
             </div>
+            <!-- Toggle notification -->
+            <div class="notification-toggle">
+                <input type="checkbox" name="notification" id="notification" class="notification-btn">
+            </div>
         </div>
-        <div class="date">
-            <h6 id="day">Loading...</h6>
-            <h1 id="date">...</h1>
-            <h6 id="month">Loading...</h6>
+        <div class="date-container">
+            <div class="date">
+                <h6 id="day">Loading...</h6>
+                <h1 id="date">...</h1>
+                <h6 id="month">Loading...</h6>
+            </div>
         </div>
     </div>
-    <!-- <script src="bootstrap.bundle.js"></script> -->
     <script src="content.js"></script>
 </body>
 
