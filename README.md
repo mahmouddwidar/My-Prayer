@@ -1,7 +1,7 @@
 # My Prayer Extension
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/4839e7d6-94d0-44f1-a2aa-376b7e81fc41" alt="My Prayer Logo" width="600">
+  <img src="https://github.com/user-attachments/assets/61815756-f7d3-4825-a792-c6f57ade0e3d" alt="My Prayer Logo" width="600">
 </p>
 
 <p align="center">
