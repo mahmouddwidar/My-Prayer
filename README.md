@@ -1,8 +1,13 @@
 # My Prayer Extension
 
-![My Prayer Logo](./imgs/icon-128.png)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/4839e7d6-94d0-44f1-a2aa-376b7e81fc41" alt="My Prayer Logo" width="600">
+</p>
 
-**My Prayer** is a browser extension designed to provide prayer times based on your current geographical location.
+<p align="center">
+  <strong>My Prayer</strong> is a browser extension designed to provide prayer times based on your current geographical location.
+</p>
+
 
 ## Features
 
@@ -10,13 +15,16 @@
 - **Hijri Date**: Displays Hijri calendars for convenience.
 - **Multiple Calculation Methods**: Get calculation method based on your geographic location.
 - **Simple and Clear Interface**: User-friendly interface for quick access to essential prayer information.
-- **Prayer Notifications**: Receive notifications when prayer times occur.
-- **Time Between Adhan and Iqamah**: (Planned) A countdown timer showing time remaining between Adhan (Azan) and Iqamah.
+- **Prayer Notifications**: Receive notifications when prayer times occur (toggle on/off).
 
-<!-- ## Known Issues
+## Known Issues
 
-- **Service Worker**: Currently, the service worker does not update prayer times consistently on a daily basis. We're investigating a fix for more reliable updates.
-- **Responsiveness**: The design needs improvements to be fully responsive. -->
+⚠️ **First-time Load Delay**  
+When you first install the extension, it may show "Loading..." and not display prayer times until you:
+1. Close the popup
+2. Reopen the extension
+
+We're working to fix this in the next update. [View this issue on GitHub](https://github.com/mahmouddwidar/My-Prayer/issues/1)
 
 ## Planned Features
 
@@ -43,9 +51,11 @@ Once installed, the extension automatically detects your location to provide pra
 
 ## Changelog
 
-### Version 1.0.3
-- Send notification to alert users when prayer time hits.
-- Improvements in the UI/UX for better adaptability.
+### Version 1.1.0 (Latest)
+✅ **Added Notification Toggle Button**  
+- New switch to enable/disable prayer time notifications  
+- Saves preference in local storage  
+- Clear UI feedback for on/off states  
 
 ## Contribution
 
