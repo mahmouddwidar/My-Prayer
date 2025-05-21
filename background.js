@@ -27,11 +27,9 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 	if (alarm.name === "dailyPrayerUpdate") {
 		console.log("Daily prayer time update triggered.");
 		const currentDate = new Date().toDateString();
-
-		// First, update the timings regardless of notification setting
+o
 		await updateTimings(currentDate);
 
-		// Then reschedule the daily alarm
 		await chrome.alarms.clear("dailyPrayerUpdate");
 		scheduleDailyAlarm();
 	} else if (alarm.name.startsWith("prayer-")) {
@@ -65,10 +63,8 @@ const currentDate = new Date().toDateString();
 
 async function updateTimings(currentDate) {
 	try {
-		// Always fetch and update prayer times regardless of notification setting
 		await fetchPrayerTimes(currentDate);
 
-		// Get the updated prayer times
 		const result = await chrome.storage.local.get(["timings", "options"]);
 		const prayerTimes = result.timings;
 		const notificationEnabled = result.options?.notification !== false;
@@ -77,7 +73,6 @@ async function updateTimings(currentDate) {
 			throw new Error("Prayer timings not found in storage.");
 		}
 
-		// Only manage prayer alarms if notifications are enabled
 		if (notificationEnabled) {
 			const prayers = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
 			prayers.forEach((prayer) => {
@@ -179,31 +174,85 @@ function checkAndUpdateTimings() {
 }
 
 async function setNotificationMode(notificationMode) {
-	if (notificationMode) {
-		await updateTimings(currentDate);
-		chrome.alarms.getAll((alarms) => console.log("All alarms set: ", alarms));
-		console.log("Enable alarms");
-	} else {
-		const prayers = await new Promise((resolve) => {
-			chrome.alarms.getAll(resolve);
-		});
+	try {
+		if (notificationMode) {
+			await updateTimings(currentDate);
 
-		// Get Only Cleared Prayers except the daily reminder alarm of updating timings.
-		const filteredPrayers = prayers.filter((prayer) =>
-			prayer.name.startsWith("prayer")
-		);
-		filteredPrayers.forEach((prayer) => {
-			chrome.alarms.clear(prayer.name, (wasCleared) => {
-				console.log(prayer.name, "alarm was cleared.");
+			// Wait a moment to ensure storage is updated
+			await new Promise(resolve => setTimeout(resolve, 500));
+
+			const result = await chrome.storage.local.get("timings");
+			if (!result.timings) {
+				console.log("⏳ Waiting for prayer times to be available...");
+				await new Promise(resolve => setTimeout(resolve, 5000));
+				const retryResult = await chrome.storage.local.get("timings");
+				if (!retryResult.timings) {
+					throw new Error("No prayer times available after retry");
+				}
+				result.timings = retryResult.timings;
+			}
+
+			// Set up prayer alarms
+			const prayers = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
+			let alarmsSet = 0;
+
+			prayers.forEach((prayer) => {
+				if (result.timings[prayer]) {
+					const [hours, minutes] = result.timings[prayer].split(":").map(Number);
+					const prayerTime = new Date();
+					prayerTime.setHours(hours, minutes, 0, 0);
+
+					if (prayerTime.getTime() > Date.now()) {
+						schedulePrayerAlarm(prayer, prayerTime.getTime());
+						alarmsSet++;
+						console.log(`✅ Alarm set for ${prayer} at ${prayerTime.toLocaleTimeString()}`);
+					} else {
+						console.warn(`⚠️ Skipping past prayer time for ${prayer}: ${prayerTime.toLocaleTimeString()}`);
+					}
+				}
 			});
-		});
-		console.log("Remaining Alarms: ", await chrome.alarms.getAll());
-		console.log("Disable alarms");
+
+			const allAlarms = await chrome.alarms.getAll();
+			console.log(`📅 Total alarms set: ${alarmsSet}`);
+			console.log('🔔 Current alarms:', allAlarms);
+
+			if (Notification.permission !== "granted") {
+				await Notification.requestPermission();
+			}
+
+			console.log("✅ Notifications enabled and alarms set");
+		} else {
+			const allAlarms = await chrome.alarms.getAll();
+
+			// Filter out only prayer alarms (excluding the daily update alarm)
+			const prayerAlarms = allAlarms.filter((alarm) =>
+				alarm.name.startsWith("prayer-") && alarm.name !== "dailyPrayerUpdate"
+			);
+
+			console.log('🗑️ Clearing prayer alarms:', prayerAlarms.map(p => p.name));
+			console.log('📅 Preserving daily update alarm');
+
+			// Clear only prayer alarms
+			for (const alarm of prayerAlarms) {
+				await chrome.alarms.clear(alarm.name);
+			}
+
+			const remainingAlarms = await chrome.alarms.getAll();
+			console.log('🔔 Remaining alarms:', remainingAlarms);
+			console.log("✅ Notifications disabled and prayer alarms cleared");
+		}
+	} catch (error) {
+		console.error("❌ Error setting notification mode:", error);
+		// If there's an error, we should still ensure the daily update alarm is set
+		const hasDailyAlarm = await chrome.alarms.get("dailyPrayerUpdate");
+		if (!hasDailyAlarm) {
+			console.log("📅 Setting up daily update alarm");
+			scheduleDailyAlarm();
+		}
 	}
 }
 
 function toggleNotificationBtn() {
-	// Watch for changes to the user's options & apply them
 	chrome.storage.onChanged.addListener((changes, area) => {
 		if (area === "local" && changes.options?.newValue) {
 			console.log("changes", changes);
@@ -217,7 +266,7 @@ setInterval(checkAndUpdateTimings, 1000);
 
 async function init() {
 	try {
-		const result = await chrome.storage.local.get("options");
+		const result = await chrome.storage.local.get(["options", "timings"]);
 		const options = result.options || {};
 
 		if (options.notification === undefined) {
@@ -225,9 +274,16 @@ async function init() {
 			await chrome.storage.local.set({ options });
 		}
 
-		await updateTimings(currentDate);
+		if (!result.timings) {
+			await updateTimings(currentDate);
+		}
+
 		await setNotificationMode(options.notification);
 		toggleNotificationBtn();
+
+		if (options.notification && Notification.permission !== "granted") {
+			Notification.requestPermission();
+		}
 	} catch (error) {
 		console.error("Initialization failed:", error);
 	}

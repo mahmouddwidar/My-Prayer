@@ -24,32 +24,53 @@ document.addEventListener("DOMContentLoaded", () => {
 	let todayPrayerTimes;
 	let todayDates;
 
-	async function getAllTimings() {
-		const result = await chrome.storage.local.get(["timings"]);
-		if (!result.timings) {
-			console.error("No timings found in storage.");
-			return;
+	// Listen for storage changes
+	chrome.storage.onChanged.addListener((changes, namespace) => {
+		if (namespace === 'local') {
+			if (changes.timings || changes.hijri_day || changes.hijri_month || changes.gregorian_day) {
+				getAllTimings().then(() => {
+					if (todayPrayerTimes && todayDates) {
+						updatePrayerTimes(todayPrayerTimes);
+						updateDates(todayDates);
+					}
+				});
+			}
 		}
-		const dates = await chrome.storage.local.get([
-			"hijri_day",
-			"hijri_month",
-			"gregorian_day",
-		]);
-		todayTimings = result["timings"];
-		todayDates = dates;
-		todayPrayerTimes = [
-			{ name: "Fajr", time: convertTo12HourFormat(todayTimings.Fajr) },
-			{ name: "Sunrise", time: convertTo12HourFormat(todayTimings.Sunrise) },
-			{ name: "Dhuhr", time: convertTo12HourFormat(todayTimings.Dhuhr) },
-			{ name: "Asr", time: convertTo12HourFormat(todayTimings.Asr) },
-			{ name: "Maghrib", time: convertTo12HourFormat(todayTimings.Maghrib) },
-			{ name: "Isha", time: convertTo12HourFormat(todayTimings.Isha) },
-		];
+	});
+
+	async function getAllTimings() {
+		try {
+			const result = await chrome.storage.local.get(["timings"]);
+			if (!result.timings) {
+				console.error("No timings found in storage.");
+				return;
+			}
+			const dates = await chrome.storage.local.get([
+				"hijri_day",
+				"hijri_month",
+				"gregorian_day",
+			]);
+			todayTimings = result["timings"];
+			todayDates = dates;
+			todayPrayerTimes = [
+				{ name: "Fajr", time: convertTo12HourFormat(todayTimings.Fajr) },
+				{ name: "Sunrise", time: convertTo12HourFormat(todayTimings.Sunrise) },
+				{ name: "Dhuhr", time: convertTo12HourFormat(todayTimings.Dhuhr) },
+				{ name: "Asr", time: convertTo12HourFormat(todayTimings.Asr) },
+				{ name: "Maghrib", time: convertTo12HourFormat(todayTimings.Maghrib) },
+				{ name: "Isha", time: convertTo12HourFormat(todayTimings.Isha) },
+			];
+		} catch (error) {
+			console.error("Error getting timings:", error);
+		}
 	}
 
+	// Initial load
 	getAllTimings().then(() => {
-		updatePrayerTimes(todayPrayerTimes);
-		updateDates(todayDates);
+		if (todayPrayerTimes && todayDates) {
+			updatePrayerTimes(todayPrayerTimes);
+			updateDates(todayDates);
+		}
 	});
 
 	function updatePrayerTimes(prayerTimes) {
@@ -169,7 +190,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		let options = result.options || {};
 
 		if (options.notification === undefined) {
-			options.notification = true; // Default Value
+			options.notification = true;
 			chrome.storage.local.set({ options });
 		}
 
