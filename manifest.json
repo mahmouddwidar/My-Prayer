@@ -43,9 +43,9 @@
         {
             "resources": [
                 "imgs/*",
-                "popup/sidebar.html",
-                "popup/sidebar.css",
-                "popup/sidebar.js"
+                "sidebar/sidebar.html",
+                "sidebar/css/sidebar.css",
+                "sidebar/js/sidebar.js"
             ],
             "matches": [
                 "<all_urls>"
