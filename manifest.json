@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "My Prayer",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "default_locale": "en",
     "description": "__MSG_extensionDescription__",
     "action": {
@@ -22,8 +22,13 @@
         "storage",
         "geolocation",
         "alarms",
-        "notifications"
+        "notifications",
+        "sidePanel",
+        "windows"
     ],
+    "side_panel": {
+        "default_path": "sidebar/sidebar.html"
+    },
     "content_scripts": [
         {
             "js": [
@@ -37,7 +42,10 @@
     "web_accessible_resources": [
         {
             "resources": [
-                "imgs/*"
+                "imgs/*",
+                "popup/sidebar.html",
+                "popup/sidebar.css",
+                "popup/sidebar.js"
             ],
             "matches": [
                 "<all_urls>"
@@ -50,6 +58,12 @@
                 "default": "Ctrl+Shift+Y"
             },
             "description": "__MSG_commandDescription__"
+        },
+        "toggle_sidebar": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+S"
+            },
+            "description": "Toggle Prayer Sidebar"
         }
     },
     "host_permissions": [

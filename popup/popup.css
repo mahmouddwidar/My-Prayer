@@ -217,3 +217,37 @@ body {
 .notification-toggle:hover::after {
 	opacity: 1;
 }
+
+/* Sidebar Button */
+.sidebar-btn {
+	position: absolute;
+	top: 0.6rem;
+	right: 0.6rem;
+	width: 24px;
+	height: 24px;
+	background: none;
+	border: none;
+	cursor: pointer;
+	padding: 0.25rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: transform var(--transition-speed);
+}
+
+.sidebar-btn:hover {
+	transform: scale(1.1);
+}
+
+.sidebar-icon {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	filter: invert(1);
+	opacity: 0.8;
+	transition: opacity var(--transition-speed);
+}
+
+.sidebar-btn:hover .sidebar-icon {
+	opacity: 1;
+}

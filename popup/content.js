@@ -1,4 +1,19 @@
 document.addEventListener("DOMContentLoaded", () => {
+	// Add sidebar button functionality
+	const sidebarBtn = document.getElementById("openSidebar");
+	if (sidebarBtn) {
+		sidebarBtn.addEventListener("click", async () => {
+			try {
+				// Get the current window
+				const currentWindow = await chrome.windows.getCurrent();
+				// Open the side panel in the current window
+				await chrome.sidePanel.open({ windowId: currentWindow.id });
+			} catch (error) {
+				console.error("Error opening side panel:", error);
+			}
+		});
+	}
+
 	if ("geolocation" in navigator) {
 		navigator.geolocation.getCurrentPosition(onSuccess, onError);
 	} else {
@@ -26,8 +41,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	// Listen for storage changes
 	chrome.storage.onChanged.addListener((changes, namespace) => {
-		if (namespace === 'local') {
-			if (changes.timings || changes.hijri_day || changes.hijri_month || changes.gregorian_day) {
+		if (namespace === "local") {
+			if (
+				changes.timings ||
+				changes.hijri_day ||
+				changes.hijri_month ||
+				changes.gregorian_day
+			) {
 				getAllTimings().then(() => {
 					if (todayPrayerTimes && todayDates) {
 						updatePrayerTimes(todayPrayerTimes);
