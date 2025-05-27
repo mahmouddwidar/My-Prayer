@@ -102,6 +102,11 @@ The repository is open for contributions! Feel free to:
 - Report issues
 - Submit pull requests
 
+### 🎨 Design Resources
+- **Figma Design**: Check out our [Figma Design File](https://www.figma.com/design/bgkUGMAzLRUbiL1w3A9s3f/My-Prayer-Extension?node-id=0-1&m=dev&t=h11LdWPBNSoe6juB-1) for design guidelines and UI components
+- Follow the design system and components when contributing new features
+- Maintain visual consistency across the extension
+
 All contributions are welcome!
 
 ## 📄 License
