@@ -190,15 +190,44 @@ document.addEventListener("DOMContentLoaded", () => {
 		const totalSeconds = Math.floor(timeDiff / 1000);
 		const hours = Math.floor(totalSeconds / 3600);
 		const minutes = Math.floor((totalSeconds % 3600) / 60);
-
+		const seconds = totalSeconds % 60;
+		
 		if (hours > 0) {
-			progressBar.textContent = `${hours} hr ${minutes} min`;
-			progressBar.setAttribute("title", `${hours} hr ${minutes} min`);
-			progressBarBackground.setAttribute("title", `${hours} hr ${minutes} min`);
+			progressBar.textContent = `${hours} hr${
+				hours > 1 ? "s" : ""
+			} ${minutes} min${minutes > 1 ? "s" : ""}`;
+			progressBar.setAttribute(
+				"title",
+				`${hours} hr${hours > 1 ? "s" : ""} ${minutes} min${
+					minutes > 1 ? "s" : ""
+				}`
+			);
+			progressBarBackground.setAttribute(
+				"title",
+				`${hours} hr${hours > 1 ? "s" : ""} ${minutes} min${
+					minutes > 1 ? "s" : ""
+				}`
+			);
+		} else if (minutes > 0) {
+			progressBar.textContent = `${minutes} min${minutes > 1 ? "s" : ""}`;
+			progressBar.setAttribute(
+				"title",
+				`${minutes} min${minutes > 1 ? "s" : ""}`
+			);
+			progressBarBackground.setAttribute(
+				"title",
+				`${minutes} min${minutes > 1 ? "s" : ""}`
+			);
 		} else {
-			progressBar.textContent = `${minutes} min`;
-			progressBar.setAttribute("title", `${minutes} min`);
-			progressBarBackground.setAttribute("title", `${minutes} min`);
+			progressBar.textContent = `${seconds} sec${seconds > 1 ? "s" : ""}`;
+			progressBar.setAttribute(
+				"title",
+				`${seconds} sec${seconds > 1 ? "s" : ""}`
+			);
+			progressBarBackground.setAttribute(
+				"title",
+				`${seconds} sec${seconds > 1 ? "s" : ""}`
+			);
 		}
 	}
 
