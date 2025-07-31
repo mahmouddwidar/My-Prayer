@@ -1,5 +1,14 @@
 import fetchCountry from "./api/fetchCountry.js";
 import fetchTimes from "./api/fetchTimes.js";
+import { 
+	getMethodByCountry, 
+	showPrayerNotification, 
+	schedulePrayerAlarm, 
+	scheduleDailyAlarm,
+	getCurrentDateString,
+	getNextMidnight,
+	handleError
+} from "./utils/common.js";
 
 // Welcome page constants
 const WELCOME_PAGE = "sidebar/welcome.html";
@@ -49,8 +58,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 chrome.alarms.onAlarm.addListener(async (alarm) => {
 	if (alarm.name === "dailyPrayerUpdate") {
 		console.log("Daily prayer time update triggered.");
-		const currentDate = new Date().toDateString();
-		o;
+		const currentDate = getCurrentDateString();
 		await updateTimings(currentDate);
 
 		await chrome.alarms.clear("dailyPrayerUpdate");
@@ -64,25 +72,9 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 	}
 });
 
-function scheduleDailyAlarm() {
-	const now = new Date();
-	const nextMidnight = new Date(
-		now.getFullYear(),
-		now.getMonth(),
-		now.getDate() + 1,
-		0,
-		0,
-		0,
-		0
-	);
+// scheduleDailyAlarm function moved to utils/common.js
 
-	chrome.alarms.create("dailyPrayerUpdate", {
-		when: nextMidnight.getTime(),
-		periodInMinutes: 24 * 60,
-	});
-}
-
-const currentDate = new Date().toDateString();
+const currentDate = getCurrentDateString();
 
 async function updateTimings(currentDate) {
 	try {
@@ -123,20 +115,9 @@ async function updateTimings(currentDate) {
 	}
 }
 
-function schedulePrayerAlarm(prayer, timestamp) {
-	chrome.alarms.create(`prayer-${prayer}`, { when: timestamp });
-	console.log(`Alarm set for ${prayer} at ${new Date(timestamp)}`);
-}
+// schedulePrayerAlarm function moved to utils/common.js
 
-function showPrayerNotification(prayerName) {
-	chrome.notifications.create({
-		type: "basic",
-		iconUrl: "./imgs/icon-64.png",
-		title: "Prayer Reminder",
-		message: `It's time for ${prayerName} prayer.`,
-		priority: 2,
-	});
-}
+// showPrayerNotification function moved to utils/common.js
 
 function fetchPrayerTimes(currentDate) {
 	return new Promise((resolve, reject) => {
@@ -165,33 +146,14 @@ function fetchPrayerTimes(currentDate) {
 	});
 }
 
-function getMethodByCountry(countryCode) {
-	const methods = {
-		AE: 16,
-		EG: 5,
-		IN: 1,
-		IQ: 3,
-		IR: 7,
-		KW: 9,
-		MY: 3,
-		PK: 1,
-		QA: 10,
-		SA: 4,
-		SG: 11,
-		TR: 13,
-		US: 2,
-		FR: 12,
-		RU: 14,
-	};
-	return methods[countryCode] || 3; // Default to Muslim World League
-}
+// getMethodByCountry function moved to utils/common.js
 
 function checkAndUpdateTimings() {
 	chrome.storage.local.get(["lastUpdated"], (result) => {
 		const currentDate = new Date();
 		const lastUpdatedDate = new Date(result.lastUpdated);
 		if (currentDate.getDate() !== lastUpdatedDate.getDate()) {
-			fetchPrayerTimes(currentDate.toDateString());
+			fetchPrayerTimes(getCurrentDateString());
 		}
 	});
 }

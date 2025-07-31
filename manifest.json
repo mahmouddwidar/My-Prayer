@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "My Prayer",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "default_locale": "en",
     "description": "__MSG_extensionDescription__",
     "action": {
@@ -29,20 +29,11 @@
     "side_panel": {
         "default_path": "sidebar/sidebar.html"
     },
-    "content_scripts": [
-        {
-            "js": [
-                "popup/content.js"
-            ],
-            "matches": [
-                "<all_urls>"
-            ]
-        }
-    ],
     "web_accessible_resources": [
         {
             "resources": [
                 "imgs/*",
+                "utils/*",
                 "sidebar/sidebar.html",
                 "sidebar/css/sidebar.css",
                 "sidebar/js/sidebar.js"

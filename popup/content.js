@@ -1,3 +1,11 @@
+import {
+	convertTo12HourFormat,
+	parseTimeToDate,
+	updateProgressBar,
+	findNextPrayer,
+	createPrayerTimesArray,
+} from "../utils/common.js";
+
 document.addEventListener("DOMContentLoaded", () => {
 	// Add sidebar button functionality
 	const sidebarBtn = document.getElementById("openSidebar");
@@ -38,6 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	let todayPrayerTimes;
 	let todayDates;
+	let todayTimings;
 
 	// Listen for storage changes
 	chrome.storage.onChanged.addListener((changes, namespace) => {
@@ -72,14 +81,11 @@ document.addEventListener("DOMContentLoaded", () => {
 			]);
 			todayTimings = result["timings"];
 			todayDates = dates;
-			todayPrayerTimes = [
-				{ name: "Fajr", time: convertTo12HourFormat(todayTimings.Fajr) },
-				{ name: "Sunrise", time: convertTo12HourFormat(todayTimings.Sunrise) },
-				{ name: "Dhuhr", time: convertTo12HourFormat(todayTimings.Dhuhr) },
-				{ name: "Asr", time: convertTo12HourFormat(todayTimings.Asr) },
-				{ name: "Maghrib", time: convertTo12HourFormat(todayTimings.Maghrib) },
-				{ name: "Isha", time: convertTo12HourFormat(todayTimings.Isha) },
-			];
+			const prayerTimesArray = createPrayerTimesArray(todayTimings);
+			todayPrayerTimes = prayerTimesArray.map(prayer => ({
+				name: prayer.name,
+				time: convertTo12HourFormat(prayer.time)
+			}));
 		} catch (error) {
 			console.error("Error getting timings:", error);
 		}
@@ -94,26 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	});
 
 	function updatePrayerTimes(prayerTimes) {
-		const currentTime = new Date();
-		let nextPrayer, previousPrayer;
-
-		for (let i = 0; i < prayerTimes.length; i++) {
-			const prayerDate = parseTimeToDate(
-				prayerTimes[i].time,
-				prayerTimes[i].name
-			);
-			if (currentTime < prayerDate) {
-				nextPrayer = prayerTimes[i];
-				previousPrayer =
-					i === 0 ? prayerTimes[prayerTimes.length - 1] : prayerTimes[i - 1];
-				break;
-			}
-		}
-
-		if (!nextPrayer) {
-			nextPrayer = prayerTimes[0];
-			previousPrayer = prayerTimes[prayerTimes.length - 1];
-		}
+		const { nextPrayer, previousPrayer } = findNextPrayer(prayerTimes);
 
 		document.getElementById(
 			"previous-time"
@@ -124,10 +111,12 @@ document.addEventListener("DOMContentLoaded", () => {
 		document.getElementById("next-time").textContent = `${nextPrayer.time}`;
 		document.getElementById("nextPrayer").textContent = `${nextPrayer.name}`;
 
+		const progressBar = document.querySelector(".progress-bar");
 		updateProgressBar(
-			currentTime,
+			new Date(),
 			parseTimeToDate(nextPrayer.time),
-			parseTimeToDate(previousPrayer.time)
+			parseTimeToDate(previousPrayer.time),
+			progressBar
 		);
 	}
 
@@ -137,99 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		document.getElementById("month").textContent = `${dates.hijri_month}`;
 	}
 
-	function parseTimeToDate(time) {
-		const [timeString, period] = time.split(" ");
-		const [hours, minutes] = timeString.split(":");
-		let hour = parseInt(hours);
-		if (period === "PM" && hour !== 12) hour += 12;
-		if (period === "AM" && hour === 12) hour = 0;
-
-		const date = new Date();
-		date.setHours(hour, parseInt(minutes), 0, 0);
-
-		return date;
-	}
-
-	function convertTo12HourFormat(time24) {
-		const [hours, minutes] = time24.split(":");
-		let period = "AM";
-		let hour = parseInt(hours);
-
-		if (hour >= 12) {
-			period = "PM";
-		}
-		if (hour === 0) {
-			hour = 12;
-		} else if (hour > 12) {
-			hour -= 12;
-		}
-
-		return `${hour}:${minutes.padStart(2, "0")} ${period}`;
-	}
-
-	function updateProgressBar(currentTime, nextPrayerTime, previousPrayerTime) {
-		let timeDiff = nextPrayerTime - currentTime;
-
-		let totalTime = nextPrayerTime - previousPrayerTime;
-
-		// Adjust totalTime for overnight prayer times
-		if (totalTime < 0) {
-			totalTime += 24 * 60 * 60 * 1000;
-			if (currentTime > nextPrayerTime) {
-				timeDiff += 24 * 60 * 60 * 1000;
-				console.log("time diff updated.");
-			}
-		}
-
-		const progressBar = document.querySelector(".progress-bar");
-		const progressBarBackground = document.querySelector(".progress");
-		const progress = 100 - (timeDiff / totalTime) * 100;
-
-		progressBar.style.width = `${progress}%`;
-
-		const totalSeconds = Math.floor(timeDiff / 1000);
-		const hours = Math.floor(totalSeconds / 3600);
-		const minutes = Math.floor((totalSeconds % 3600) / 60);
-		const seconds = totalSeconds % 60;
-		
-		if (hours > 0) {
-			progressBar.textContent = `${hours} hr${
-				hours > 1 ? "s" : ""
-			} ${minutes} min${minutes > 1 ? "s" : ""}`;
-			progressBar.setAttribute(
-				"title",
-				`${hours} hr${hours > 1 ? "s" : ""} ${minutes} min${
-					minutes > 1 ? "s" : ""
-				}`
-			);
-			progressBarBackground.setAttribute(
-				"title",
-				`${hours} hr${hours > 1 ? "s" : ""} ${minutes} min${
-					minutes > 1 ? "s" : ""
-				}`
-			);
-		} else if (minutes > 0) {
-			progressBar.textContent = `${minutes} min${minutes > 1 ? "s" : ""}`;
-			progressBar.setAttribute(
-				"title",
-				`${minutes} min${minutes > 1 ? "s" : ""}`
-			);
-			progressBarBackground.setAttribute(
-				"title",
-				`${minutes} min${minutes > 1 ? "s" : ""}`
-			);
-		} else {
-			progressBar.textContent = `${seconds} sec${seconds > 1 ? "s" : ""}`;
-			progressBar.setAttribute(
-				"title",
-				`${seconds} sec${seconds > 1 ? "s" : ""}`
-			);
-			progressBarBackground.setAttribute(
-				"title",
-				`${seconds} sec${seconds > 1 ? "s" : ""}`
-			);
-		}
-	}
+	// parseTimeToDate, convertTo12HourFormat, and updateProgressBar functions moved to utils/common.js
 
 	// Notification Button
 	const checkbox = document.getElementById("notification");
@@ -239,7 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
 		let options = result.options || {};
 
 		if (options.notification === undefined) {
-			options.notification = true;
+			options.notification = false;
 			chrome.storage.local.set({ options });
 		}
 

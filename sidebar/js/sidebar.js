@@ -1,10 +1,12 @@
 import { morningAzkar, eveningAzkar } from "../../utils/azkar-content.js";
+import { convertTo12HourFormat, createPrayerTimesArray } from "../../utils/common.js";
 
 // Sidebar Initialization
 document.addEventListener("DOMContentLoaded", () => {
 	initializeSections();
 	loadPrayerTimes();
 	loadAzkar();
+	initializeScrollToTop();
 });
 
 // Section Toggle Functionality with Local Storage
@@ -47,14 +49,7 @@ async function loadPrayerTimes() {
 		}
 
 		const prayerList = document.querySelector(".prayer-list");
-		const prayers = [
-			{ name: "Fajr", time: result.timings.Fajr },
-			{ name: "Sunrise", time: result.timings.Sunrise },
-			{ name: "Dhuhr", time: result.timings.Dhuhr },
-			{ name: "Asr", time: result.timings.Asr },
-			{ name: "Maghrib", time: result.timings.Maghrib },
-			{ name: "Isha", time: result.timings.Isha },
-		];
+		const prayers = createPrayerTimesArray(result.timings);
 
 		const currentTime = new Date();
 		let nextPrayerFound = false;
@@ -184,20 +179,29 @@ function resetCounter(button) {
 	button.parentElement.classList.remove("disabled");
 }
 
-// Utility Functions
-function convertTo12HourFormat(time24) {
-	const [hours, minutes] = time24.split(":");
-	let period = "AM";
-	let hour = parseInt(hours);
+// convertTo12HourFormat function moved to utils/common.js
 
-	if (hour >= 12) {
-		period = "PM";
-	}
-	if (hour === 0) {
-		hour = 12;
-	} else if (hour > 12) {
-		hour -= 12;
+// Scroll to Top Functionality
+function initializeScrollToTop() {
+	const scrollToTopBtn = document.getElementById('scrollToTop');
+
+	// Show/hide button based on scroll position
+	function toggleScrollButton() {
+		if (window.scrollY > 300) {
+			scrollToTopBtn.classList.add('visible');
+		} else {
+			scrollToTopBtn.classList.remove('visible');
+		}
 	}
 
-	return `${hour}:${minutes.padStart(2, "0")} ${period}`;
+	// Scroll to top when button is clicked
+	scrollToTopBtn.addEventListener('click', () => {
+		window.scrollTo({
+			top: 0,
+			behavior: 'smooth'
+		});
+	});
+
+	// Listen for scroll events
+	window.addEventListener('scroll', toggleScrollButton);
 }
