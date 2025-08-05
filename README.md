@@ -73,7 +73,18 @@ Once installed, the extension automatically detects your location to provide pra
 
 ## 📋 Changelog
 
-### Version 1.2.0 (Latest)
+### Version 1.2.1 (Latest) - Bug Fixes & Improvements
+**Fixed:**
+- Resolved an issue where remaining time for next prayer wasn't displaying correctly
+- Addressed notification preferences by changing default setting to disabled
+
+**Improved:**
+- Enhanced time display accuracy by showing remaining seconds in countdown.
+- Added UX improvement with new "Back to Top" button in sidebar for easier navigation.
+
+----
+
+### Version 1.2.0
 #### 🆕 New Features
 - **Prayer Times Sidebar**
   - Comprehensive view of all prayer times
@@ -86,13 +97,6 @@ Once installed, the extension automatically detects your location to provide pra
   - Reset functionality for counters
   - Virtues (fadl) of each zekr
   - User-friendly interface for adhkar navigation
-
-### Version 1.1.0
-#### 🔔 Notification Updates
-- **Added Notification Toggle Button**  
-  - New switch to enable/disable prayer time notifications  
-  - Saves preference in local storage  
-  - Clear UI feedback for on/off states  
 
 ## 🤝 Contribution
 

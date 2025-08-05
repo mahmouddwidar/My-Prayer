@@ -1,9 +1,9 @@
 import fetchCountry from "./api/fetchCountry.js";
 import fetchTimes from "./api/fetchTimes.js";
-import { 
-	getMethodByCountry, 
-	showPrayerNotification, 
-	schedulePrayerAlarm, 
+import {
+	getMethodByCountry,
+	showPrayerNotification,
+	schedulePrayerAlarm,
 	scheduleDailyAlarm,
 	getCurrentDateString,
 	getNextMidnight,
@@ -265,7 +265,7 @@ async function init() {
 		const options = result.options || {};
 
 		if (options.notification === undefined) {
-			options.notification = true;
+			options.notification = false;
 			await chrome.storage.local.set({ options });
 		}
 
