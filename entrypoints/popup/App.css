@@ -1,0 +1,136 @@
+@import "tailwindcss";
+
+@theme {
+	--color-primary: #ffc107;
+	--color-primary-dark: #e0a800;
+	--color-dark-bg: #212529;
+	--color-dark-surface: rgba(0, 0, 0, 0.3);
+	--color-text-light: rgb(255 255 255 / 80%);
+	--color-text-muted: rgb(255 255 255 / 60%);
+	--color-black: #000000;
+	--color-offwhite-light: rgba(255, 255, 255, 0.065);
+	--color-offwhite-medium: rgba(255, 255, 255, 0.15);
+	--color-offwhite-transparent: rgba(255, 255, 255, 0);
+	--color-offwhite-55: rgba(255, 255, 255, 0.557);
+	--color-offwhite-96: rgba(255, 255, 255, 0.966);
+
+	/* Gradients - Your original gradients */
+	/* --bg-gradient-yellow: linear-gradient(
+		180deg,
+		rgba(255, 193, 7, 0.9),
+		rgba(224, 168, 0, 0.9)
+	); */
+	
+	/* Shadows */
+	--shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+	--shadow-inner-progress: inset 0 1px 2px rgba(0, 0, 0, 0.25),
+		0 1px rgba(255, 255, 255, 0.08);
+	--shadow-progress-bar: inset 0 1px 1px rgba(255, 255, 255, 0.1),
+		0 1px 2px rgba(0, 0, 0, 0.7);
+	--shadow-toggle: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+	--shadow-toggle-handle: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+	/* Border Radius */
+	--radius-progress: 0.75rem;
+	--radius-toggle: 0.875rem;
+	--radius-date: 0.5rem;
+
+	/* Transitions */
+	--transition-default: 0.3s ease;
+	--transition-progress: width 0.5s ease;
+}
+
+@layer base {
+	* {
+		box-sizing: border-box;
+	}
+
+	body {
+		font-family: "Ubuntu", "Cantarell", sans-serif;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;;
+	}
+}
+
+@layer components {
+	/* Custom checkbox/toggle component */
+	.notification-toggle-custom {
+		-webkit-appearance: none;
+		-moz-appearance: none;
+		appearance: none;
+		width: 3.5rem;
+		height: 1.75rem;
+		background: rgba(0, 0, 0, 0.25);
+		border-radius: var(--radius-toggle);
+		position: relative;
+		cursor: pointer;
+		outline: none;
+		transition: background var(--transition-default);
+		box-shadow: var(--shadow-toggle);
+
+		&::before {
+			content: "🔔";
+			position: absolute;
+			width: 1.5rem;
+			height: 1.5rem;
+			border-radius: 50%;
+			background: white;
+			top: 0.125rem;
+			left: 0.125rem;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			font-size: 0.7rem;
+			transition: transform var(--transition-default);
+			box-shadow: var(--shadow-toggle-handle);
+		}
+
+		&:checked {
+			background: var(--color-primary);
+
+			&::before {
+				transform: translateX(1.75rem);
+			}
+		}
+
+		&:not(:checked)::before {
+			background-color: var(--color-black);
+		}
+	}
+
+	/* Tooltip for toggle */
+	.notification-toggle-wrapper:hover::after {
+		content: "Toggle notifications";
+		position: absolute;
+		background: rgba(0, 0, 0, 0.8);
+		color: white;
+		padding: 0.25rem 0.5rem;
+		border-radius: 0.25rem;
+		font-size: 0.75rem;
+		bottom: 105%;
+		left: 30%;
+		transform: translateX(-50%);
+		white-space: nowrap;
+		pointer-events: none;
+		opacity: 0;
+		transition: opacity 0.2s;
+	}
+
+	.notification-toggle-wrapper:hover::after {
+		opacity: 1;
+	}
+
+	/* Custom scrollbar */
+	::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	::-webkit-scrollbar-track {
+		background: rgba(0, 0, 0, 0.1);
+	}
+
+	::-webkit-scrollbar-thumb {
+		background: var(--color-primary);
+		border-radius: 3px;
+	}
+}
