@@ -20,7 +20,7 @@
 		rgba(255, 193, 7, 0.9),
 		rgba(224, 168, 0, 0.9)
 	); */
-	
+
 	/* Shadows */
 	--shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
 	--shadow-inner-progress: inset 0 1px 2px rgba(0, 0, 0, 0.25),
@@ -38,6 +38,18 @@
 	/* Transitions */
 	--transition-default: 0.3s ease;
 	--transition-progress: width 0.5s ease;
+
+	/* Animations */
+	--animate-fade-in: fadeIn 1s ease-out forwards;
+	@keyframes fadeIn {
+		0% {
+			opacity: 0;
+		}
+		,
+		100% {
+			opacity: 1;
+		}
+	}
 }
 
 @layer base {
@@ -48,7 +60,7 @@
 	body {
 		font-family: "Ubuntu", "Cantarell", sans-serif;
 		-webkit-font-smoothing: antialiased;
-		-moz-osx-font-smoothing: grayscale;;
+		-moz-osx-font-smoothing: grayscale;
 	}
 }
 
