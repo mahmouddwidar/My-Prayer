@@ -11,6 +11,9 @@ export const DateCard = ({ weekday, day, month }: DateInfo) => {
 				</h1>
 				<h6 className="text-xl animate-fade-in">{month}</h6>
 			</div>
+			<button onClick={() => browser.runtime.openOptionsPage()}>
+				Open Options
+			</button>
 		</div>
 	);
 };

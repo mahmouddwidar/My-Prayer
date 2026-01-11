@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
 	--color-primary: #ffc107;
 	--color-primary-dark: #e0a800;
@@ -65,6 +67,36 @@
 }
 
 @layer components {
+	/* Glass Card Component */
+	.glass-card {
+		background: rgba(255, 255, 255, 0.85);
+		backdrop-filter: blur(12px);
+		/* border-radius: 1rem; */
+		border-bottom: 1.5px solid rgba(255, 193, 7, 0.25);
+		/* box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08); */
+		transition: all 0.3s ease;
+	}
+
+	.dark .glass-card {
+		background: rgba(25, 26, 27, 0.5);
+		/* border-color: rgba(255, 193, 7, 0.15); */
+		border-bottom: none;
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+	}
+
+	.glass-card:hover {
+		background: rgba(255, 255, 255, 0.95);
+		border-color: rgba(255, 193, 7, 0.35);
+		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+	}
+
+	.dark .glass-card:hover {
+		background: rgba(25, 26, 27, 0.6);
+		border-color: rgba(255, 193, 7, 0.2);
+		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4),
+			inset 0 1px 0 rgba(255, 255, 255, 0.15);
+	}
+
 	/* Custom checkbox/toggle component */
 	.notification-toggle-custom {
 		-webkit-appearance: none;

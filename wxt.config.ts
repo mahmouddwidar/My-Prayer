@@ -33,11 +33,11 @@ export default defineConfig({
 
     // Host permissions for API calls
     host_permissions: [
-      'https://api.aladhan.com/*',           // ✅ Prayer times API
-      'https://api.aladhan.com/v1/*',        // ✅ Specific API version
-      'https://*.aladhan.com/*',             // ✅ All subdomains
-      'https://api.bigdatacloud.net/*',      // ✅ Reverse geocoding API
-      'https://*.bigdatacloud.net/*',        // ✅ All subdomains
+      'https://api.aladhan.com/*',
+      'https://api.aladhan.com/v1/*',
+      'https://*.aladhan.com/*',
+      'https://api.bigdatacloud.net/*',
+      'https://*.bigdatacloud.net/*',
     ],
 
     "action": {
@@ -51,54 +51,12 @@ export default defineConfig({
       persistent: true  // Keep alive for notifications
     },
 
-    // Optional permissions (requested at runtime)
-    // optional_permissions: [
-    //   'activeTab',         // For potential future features
-    //   'scripting'          // For potential future features
-    // ],
-
-    // Key for persistent background service worker
-    // background: {
-    //   service_worker: 'background.ts',
-    //   type: 'module'
-    // },
-
-    // // Icons (multiple sizes required)
-    // icons: {
-    //   16: 'icon/icon-16.png',
-    //   32: 'icon/icon-32.png',
-    //   48: 'icon/icon-48.png',
-    //   128: 'icon/icon-128.png'
-    // },
-
-    // // Action configuration (browser toolbar button)
-    // action: {
-    //   default_title: 'My Prayer',
-    //   default_popup: 'popup/index.html',
-    //   default_icon: {
-    //     16: 'icon/icon-16.png',
-    //     32: 'icon/icon-32.png',
-    //     48: 'icon/icon-48.png'
-    //   }
-    // },
-
     // Side panel configuration
     // side_panel: {
     //   default_path: 'sidepanel/index.html'
     // },
 
     // Options page
-    // options_ui: {
-    //   page: 'options/index.html',
-    //   open_in_tab: true
-    // },
-
-    // Minimum Chrome version
-    // minimum_chrome_version: '88',
-
-    // Content Security Policy
-    // content_security_policy: {
-    //   extension_pages: "script-src 'self'; object-src 'self'; connect-src 'self' https://api.aladhan.com https://api.bigdatacloud.net"
-    // }
+    "options_page": './entrypoints/options/index.html',
   },
 });
