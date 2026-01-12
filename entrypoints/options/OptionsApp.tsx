@@ -97,7 +97,7 @@ export default function OptionsApp() {
 							</h2>
 						</div>
 						<div className="p-6 space-y-4">
-							<div className="flex items-center justify-between p-4 bg-white/60 dark:hover:bg-[#15191f] rounded-xl backdrop-blur-md hover:bg-white/80 dark:bg-[#131416] transition-colors border border-yellow-100/20 dark:border-white/10">
+							<div className="flex items-center justify-between p-4 bg-[#f8f8f836] dark:hover:bg-[#15191f] rounded-xl backdrop-blur-md hover:bg-[#fbfdf4] dark:bg-[#131416] transition-colors border border-gray-100 dark:border-white/10">
 								<div>
 									<h3 className="font-medium text-[15px] text-gray-900 dark:text-white">
 										Dark Mode
