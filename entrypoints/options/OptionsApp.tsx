@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../popup/App.css";
+import SettingCard from "../components/options/SettingCard";
 
 export default function OptionsApp() {
 	const [settings, setSettings] = useState({
@@ -96,29 +97,22 @@ export default function OptionsApp() {
 								<span className="text-xl">🎨</span> Theme
 							</h2>
 						</div>
-						<div className="p-6 space-y-4">
-							<div className="flex items-center justify-between p-4 bg-[#f8f8f836] dark:hover:bg-[#15191f] rounded-xl backdrop-blur-md hover:bg-[#fbfdf4] dark:bg-[#131416] transition-colors border border-gray-100 dark:border-white/10">
-								<div>
-									<h3 className="font-medium text-[15px] text-gray-900 dark:text-white">
-										Dark Mode
-									</h3>
-									<p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-										Switch between light and dark theme
-									</p>
-								</div>
-								<label className="relative inline-flex items-center cursor-pointer">
-									<input
-										type="checkbox"
-										checked={settings.theme === "dark"}
-										onChange={(e) =>
-											handleChange("theme", e.target.checked ? "dark" : "light")
-										}
-										className="sr-only peer"
-									/>
-									<div className="w-14 h-8 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-green-600 dark:peer-focus:ring-green-500 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-500 dark:peer-checked:bg-green-600"></div>
-								</label>
-							</div>
-						</div>
+						<SettingCard
+							title="Dark Mode"
+							desc="Switch between light and dark theme"
+						>
+							<label className="relative inline-flex items-center cursor-pointer">
+								<input
+									type="checkbox"
+									checked={settings.theme === "dark"}
+									onChange={(e) =>
+										handleChange("theme", e.target.checked ? "dark" : "light")
+									}
+									className="sr-only peer"
+								/>
+								<div className="w-14 h-8 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-green-600 dark:peer-focus:ring-green-500 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-500 dark:peer-checked:bg-green-600"></div>
+							</label>
+						</SettingCard>
 					</section>
 
 					{/* Notifications Section */}
