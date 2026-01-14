@@ -122,56 +122,22 @@ export default function OptionsApp() {
 								<span className="text-xl">🔔</span> Notifications
 							</h2>
 						</div>
-						<div className="p-6 space-y-4">
-							<div className="flex items-center justify-between p-4 bg-white/60 dark:bg-[#0f3460]/60 rounded-xl backdrop-blur-md hover:bg-white/80 dark:hover:bg-[#0f3460]/80 transition-colors border border-yellow-100/20 dark:border-white/10">
-								<div>
-									<h3 className="font-medium text-gray-900 dark:text-white">
-										Enable Notifications
-									</h3>
-									<p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-										Get prayer time reminders
-									</p>
-								</div>
-								<label className="relative inline-flex items-center cursor-pointer">
-									<input
-										type="checkbox"
-										checked={settings.notifications}
-										onChange={(e) =>
-											handleChange("notifications", e.target.checked)
-										}
-										className="sr-only peer"
-									/>
-									<div className="w-14 h-8 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-green-600 dark:peer-focus:ring-green-500 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-500 dark:peer-checked:bg-green-600"></div>
-								</label>
-							</div>
-
-							<div
-								className="flex items-center justify-between p-4 bg-white/60 dark:bg-[#0f3460]/60 rounded-xl backdrop-blur-md hover:bg-white/80 dark:hover:bg-[#0f3460]/80 transition-colors border border-yellow-100/20 dark:border-white/10"
-								style={{
-									opacity: settings.notifications ? 1 : 0.5,
-									pointerEvents: settings.notifications ? "auto" : "none",
-								}}
-							>
-								<div>
-									<h3 className="font-medium text-gray-900 dark:text-white">
-										Adhan Sound
-									</h3>
-									<p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-										Play sound with notifications
-									</p>
-								</div>
-								<label className="relative inline-flex items-center cursor-pointer">
-									<input
-										type="checkbox"
-										checked={settings.sound}
-										onChange={(e) => handleChange("sound", e.target.checked)}
-										disabled={!settings.notifications}
-										className="sr-only peer"
-									/>
-									<div className="w-14 h-8 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-yellow-500 dark:peer-focus:ring-yellow-400 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-amber-600 dark:peer-checked:bg-amber-600"></div>
-								</label>
-							</div>
-						</div>
+						<SettingCard
+							title="Enable Notifications"
+							desc="Get prayer time reminders"
+						>
+							<label className="relative inline-flex items-center cursor-pointer">
+								<input
+									type="checkbox"
+									checked={settings.notifications}
+									onChange={(e) =>
+										handleChange("notifications", e.target.checked)
+									}
+									className="sr-only peer"
+								/>
+								<div className="w-14 h-8 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-green-600 dark:peer-focus:ring-green-500 rounded-full peer dark:bg-gray-600 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-500 dark:peer-checked:bg-green-600"></div>
+							</label>
+						</SettingCard>
 					</section>
 
 					{/* Display Section */}
