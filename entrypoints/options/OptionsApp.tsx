@@ -43,23 +43,28 @@ export default function OptionsApp() {
 		return () => browser.storage.onChanged.removeListener(handleStorageChange);
 	}, []);
 
-	// Save settings
-	const saveSettings = () => {
-		browser.storage.local.set({ settings }, () => {
-			console.log("Settings saved");
-			// Apply theme immediately
-			applyTheme(settings.theme);
-			// Send message to background script
-			browser.runtime.sendMessage({ type: "SETTINGS_UPDATED", settings });
-		});
-	};
-
 	// Handle input changes
 	const handleChange = (key: keyof typeof settings, value: any) => {
-		setSettings((prev) => ({
-			...prev,
+		const updatedSettings = {
+			...settings,
 			[key]: value,
-		}));
+		};
+		setSettings(updatedSettings);
+
+		// Save settings immediately
+		browser.storage.local.set({ settings: updatedSettings }, () => {
+			console.log("Settings saved");
+			// Apply theme immediately if theme is being changed
+			if (key === "theme") {
+				applyTheme(value);
+			}
+		});
+
+		// Send message to background script
+		browser.runtime.sendMessage({
+			type: "SETTINGS_UPDATED",
+			settings: updatedSettings,
+		});
 	};
 
 	// Reset to defaults
@@ -240,13 +245,6 @@ export default function OptionsApp() {
 
 					{/* Action Buttons */}
 					<div className="space-y-3 mt-6 pb-8">
-						<button
-							onClick={saveSettings}
-							className="fixed z-50 right-[8%] md:right-[10%] lg:right-[15%] bottom-[6%] px-8 py-3 text-[15px] cursor-pointer rounded-full bg-green-500 border border-green-600 font-bold text-white hover:border-green-500 hover:bg-green-600 transition-all hover:scale-105 active:scale-95 shadow-xl backdrop-blur-sm"
-						>
-							Save
-						</button>
-
 						<button
 							onClick={resetDefaults}
 							className="w-full px-6 py-4 bg-white/60 dark:bg-[#0f3460]/60 text-gray-900 dark:text-white font-semibold rounded-xl hover:bg-white/80 dark:hover:bg-[#0f3460]/80 transition-all backdrop-blur-sm border border-yellow-100/20 dark:border-white/10"
