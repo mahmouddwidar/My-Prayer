@@ -3,12 +3,25 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+	/* Primary Colors */
 	--color-primary: #ffc107;
 	--color-primary-dark: #e0a800;
+
+	/* Dark Mode (Original) */
 	--color-dark-bg: #212529;
 	--color-dark-surface: rgba(0, 0, 0, 0.3);
 	--color-text-light: rgb(255 255 255 / 80%);
 	--color-text-muted: rgb(255 255 255 / 60%);
+
+	/* Light Mode */
+	--color-light-bg: #f8f9fb; /* soft off-white */
+	--color-light-surface: #ffffff; /* cards */
+	--color-light-border: #f1e4b3; /* subtle yellow border */
+	--color-light-accent: #fff3cd; /* soft yellow background */
+	--color-text-dark: #1f2937; /* better than pure black */
+	--color-text-muted-light: #6b7280;
+
+	/* Utilities */
 	--color-black: #000000;
 	--color-offwhite-light: rgba(255, 255, 255, 0.065);
 	--color-offwhite-medium: rgba(255, 255, 255, 0.15);
@@ -16,19 +29,12 @@
 	--color-offwhite-55: rgba(255, 255, 255, 0.557);
 	--color-offwhite-96: rgba(255, 255, 255, 0.966);
 
-	/* Gradients - Your original gradients */
-	/* --bg-gradient-yellow: linear-gradient(
-		180deg,
-		rgba(255, 193, 7, 0.9),
-		rgba(224, 168, 0, 0.9)
-	); */
-
 	/* Shadows */
 	--shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
-	--shadow-inner-progress: inset 0 1px 2px rgba(0, 0, 0, 0.25),
-		0 1px rgba(255, 255, 255, 0.08);
-	--shadow-progress-bar: inset 0 1px 1px rgba(255, 255, 255, 0.1),
-		0 1px 2px rgba(0, 0, 0, 0.7);
+	--shadow-inner-progress:
+		inset 0 1px 2px rgba(0, 0, 0, 0.25), 0 1px rgba(255, 255, 255, 0.08);
+	--shadow-progress-bar:
+		inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 1px 2px rgba(0, 0, 0, 0.7);
 	--shadow-toggle: inset 0 1px 3px rgba(0, 0, 0, 0.3);
 	--shadow-toggle-handle: 0 1px 3px rgba(0, 0, 0, 0.3);
 
@@ -47,7 +53,6 @@
 		0% {
 			opacity: 0;
 		}
-		,
 		100% {
 			opacity: 1;
 		}
@@ -64,37 +69,163 @@
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
 	}
+
+	/* Default to dark mode (original) */
+	body {
+		background-color: var(--color-dark-bg);
+		color: var(--color-text-light);
+	}
+
+	/* Light mode overrides */
+	html:not(.dark) body {
+		background-color: var(--color-light-bg);
+		color: var(--color-text-dark);
+	}
+
+	html:not(.dark) body {
+		background: linear-gradient(180deg, #f8f9fb, #fffdf5);
+		position: relative;
+	}
+
+	html:not(.dark) body::before {
+		content: "";
+		position: fixed;
+		inset: 0;
+		background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffc107' fill-opacity='0.05'%3E%3Cpath d='M30 0l10 10-10 10-10-10zM0 30l10-10 10 10-10 10zM60 30l-10-10-10 10 10 10zM30 60l-10-10 10-10 10 10z'/%3E%3C/g%3E%3C/svg%3E");
+		background-size: 60px 60px;
+		pointer-events: none;
+		z-index: 1;
+	}
+
+	.dark body::before {
+		content: "";
+		position: fixed;
+		inset: 0;
+		background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.01'%3E%3Cpath d='M30 0l10 10-10 10-10-10zM0 30l10-10 10 10-10 10zM60 30l-10-10-10 10 10 10zM30 60l-10-10 10-10 10 10z'/%3E%3C/g%3E%3C/svg%3E");
+		background-size: 60px 60px;
+		pointer-events: none;
+		z-index: 1;
+	}
 }
 
 @layer components {
-	/* Glass Card Component */
+	/* Glass Card Component - Dark Mode (Original) */
 	.glass-card {
 		background: rgba(255, 255, 255, 0.85);
-		backdrop-filter: blur(12px);
-		/* border-radius: 1rem; */
+		/* backdrop-filter: blur(12px); */
 		border-bottom: 1.5px solid rgba(255, 193, 7, 0.25);
-		/* box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08); */
 		transition: all 0.3s ease;
 	}
 
 	.dark .glass-card {
 		background: rgba(25, 26, 27, 0.5);
-		/* border-color: rgba(255, 193, 7, 0.15); */
 		border-bottom: none;
 		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 	}
 
 	.glass-card:hover {
-		background: rgba(255, 255, 255, 0.95);
+		/* background: rgba(255, 255, 255, 0.95); */
+		background: #FFF;
 		border-color: rgba(255, 193, 7, 0.35);
 		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
 	}
 
 	.dark .glass-card:hover {
-		background: rgba(25, 26, 27, 0.6);
+		/* background: rgba(25, 26, 27, 0.6); */
+		background: #0e0d0d;
 		border-color: rgba(255, 193, 7, 0.2);
-		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4),
+		box-shadow:
+			0 12px 40px rgba(0, 0, 0, 0.4),
 			inset 0 1px 0 rgba(255, 255, 255, 0.15);
+	}
+
+	/* Popup Container - Dark Mode (Original) */
+	.popup-container {
+		background: var(--color-dark-bg);
+		position: relative;
+		z-index: 1;
+	}
+
+	html:not(.dark) .popup-container {
+		background: var(--color-light-bg);
+	}
+
+	/* Prayer Card - Light Mode Support */
+	.prayer-card {
+		background: var(--color-dark-surface);
+		color: var(--color-text-light);
+		transition: all 0.3s ease;
+	}
+
+	html:not(.dark) .prayer-card {
+		background: linear-gradient(145deg, #ffffff, #fff8e1);
+		border-top: 1px solid rgba(255, 193, 7, 0.2);
+		color: var(--color-text-dark);
+		box-shadow: 0 6px 16px rgba(255, 193, 7, 0.12);
+	}
+
+	.date-card-content {
+		background: linear-gradient(
+			180deg,
+			rgba(255, 211, 0, 0.3),
+			rgba(255, 211, 0, 0.1)
+		);
+		border-radius: var(--radius-date);
+	}
+
+	.dark .date-card-content {
+		background: linear-gradient(
+			180deg,
+			rgba(255, 211, 0, 0.3),
+			rgba(255, 211, 0, 0.1)
+		);
+	}
+
+	html:not(.dark) .date-card-content {
+		background: linear-gradient(
+			180deg,
+			rgba(255, 211, 0, 0.2),
+			rgba(255, 211, 0, 0.05)
+		);
+	}
+
+	/* Options Button - Circular Gear */
+	.options-btn {
+		position: absolute;
+		top: 0.5rem;
+		right: 0.5rem;
+		width: 2.5rem;
+		height: 2.5rem;
+		/* border-radius: 50%; */
+		/* background: var(--color-primary); */
+		border: none;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 1.1rem;
+		transition: all 0.3s ease;
+		/* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); */
+		z-index: 10;
+	}
+
+	.options-btn:hover {
+		/* background: var(--color-primary-dark); */
+		transform: scale(1.1) rotate(45deg);
+		/* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); */
+	}
+
+	.options-btn:active {
+		transform: scale(0.95);
+	}
+
+	/* Text Colors for Light Mode */
+	html:not(.dark) .text-light-mode {
+		color: var(--color-text-dark);
+	}
+
+	.dark .text-light-mode {
+		color: var(--color-text-light);
 	}
 
 	/* Custom checkbox/toggle component */
@@ -111,35 +242,35 @@
 		outline: none;
 		transition: background var(--transition-default);
 		box-shadow: var(--shadow-toggle);
+	}
 
-		&::before {
-			content: "🔔";
-			position: absolute;
-			width: 1.5rem;
-			height: 1.5rem;
-			border-radius: 50%;
-			background: white;
-			top: 0.125rem;
-			left: 0.125rem;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			font-size: 0.7rem;
-			transition: transform var(--transition-default);
-			box-shadow: var(--shadow-toggle-handle);
-		}
+	.notification-toggle-custom::before {
+		content: "🔔";
+		position: absolute;
+		width: 1.5rem;
+		height: 1.5rem;
+		border-radius: 50%;
+		background: white;
+		top: 0.125rem;
+		left: 0.125rem;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		font-size: 0.7rem;
+		transition: transform var(--transition-default);
+		box-shadow: var(--shadow-toggle-handle);
+	}
 
-		&:checked {
-			background: var(--color-primary);
+	.notification-toggle-custom:checked {
+		background: var(--color-primary);
+	}
 
-			&::before {
-				transform: translateX(1.75rem);
-			}
-		}
+	.notification-toggle-custom:checked::before {
+		transform: translateX(1.75rem);
+	}
 
-		&:not(:checked)::before {
-			background-color: var(--color-black);
-		}
+	.notification-toggle-custom:not(:checked)::before {
+		background-color: var(--color-black);
 	}
 
 	/* Tooltip for toggle */
@@ -176,5 +307,9 @@
 	::-webkit-scrollbar-thumb {
 		background: var(--color-primary);
 		border-radius: 3px;
+	}
+
+	.dark ::-webkit-scrollbar-track {
+		background: rgba(255, 255, 255, 0.05);
 	}
 }

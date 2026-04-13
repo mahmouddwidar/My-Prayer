@@ -3,6 +3,7 @@ import { DateInfo, PrayerTime } from '../types/prayer';
 import { Coordinates } from '../types/api';
 import { PrayerService } from '../api/services/prayerService';
 import { GeolocationService } from '../api/services/geolocationService';
+import { StorageManager } from '../utils/storageUtils';
 
 interface UsePrayerTimesReturn {
     prayerTimes: PrayerTime[];
@@ -21,6 +22,7 @@ export function usePrayerTimes(): UsePrayerTimesReturn {
 
     const prayerService = new PrayerService();
     const geolocationService = new GeolocationService();
+    const storageManager = new StorageManager();
 
     const loadPrayerTimes = useCallback(async (coordinates?: Coordinates) => {
         setIsLoading(true);
@@ -35,7 +37,8 @@ export function usePrayerTimes(): UsePrayerTimesReturn {
             }
 
             if (coords) {
-                const times = await prayerService.getPrayerTimes(coords);
+                // Always pass forceRefresh=false for the service to handle location comparison
+                const times = await prayerService.getPrayerTimes(coords, false);
                 setPrayerTimes(times);
                 const dateInfo = await prayerService.getDateInfo();
                 setDateInfo(dateInfo);
@@ -61,6 +64,39 @@ export function usePrayerTimes(): UsePrayerTimesReturn {
     // Load on mount
     useEffect(() => {
         loadPrayerTimes();
+    }, [loadPrayerTimes]);
+
+    // Listen for manual location updates from storage
+    useEffect(() => {
+        const handleStorageChange = async (changes: { [key: string]: browser.storage.StorageChange }, areaName: string) => {
+            if (areaName !== 'local') return;
+
+            if (changes.manualLocation && changes.manualLocation.newValue) {
+                const newLocation = changes.manualLocation.newValue as Coordinates;
+                console.log('Manual location updated to:', newLocation);
+                // Fetch prayer times with new coordinates
+                await loadPrayerTimes(newLocation);
+            }
+        };
+
+        browser.storage.onChanged.addListener(handleStorageChange);
+        return () => browser.storage.onChanged.removeListener(handleStorageChange);
+    }, [loadPrayerTimes]);
+
+    // Listen for messages from options page (for message-based updates as fallback)
+    useEffect(() => {
+        const handleMessage = async (message: any) => {
+            if (message.type === 'LOCATION_UPDATED' && message.location) {
+                console.log('Location updated from settings, fetching new prayer times...');
+                await loadPrayerTimes(message.location as Coordinates);
+            } else if (message.type === 'LOCATION_CLEARED') {
+                console.log('Location cleared, falling back to auto-geolocation...');
+                await loadPrayerTimes();
+            }
+        };
+
+        browser.runtime.onMessage.addListener(handleMessage);
+        return () => browser.runtime.onMessage.removeListener(handleMessage);
     }, [loadPrayerTimes]);
 
     return {

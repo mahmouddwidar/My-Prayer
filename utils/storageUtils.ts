@@ -6,6 +6,7 @@ export class StorageManager {
     private static readonly COORDINATES_KEY = 'coordinates';
     private static readonly COUNTRY_DATA_KEY = 'countryData';
     private static readonly LAST_UPDATED_KEY = 'lastUpdated';
+    private static readonly MANUAL_LOCATION_KEY = 'manualLocation';
 
     async setPrayerData(data: PrayerData): Promise<void> {
         try {
@@ -65,6 +66,34 @@ export class StorageManager {
         } catch (error) {
             console.error('Failed to get country data:', error);
             return null;
+        }
+    }
+
+    async setManualLocation(coordinates: Coordinates): Promise<void> {
+        try {
+            await browser.storage.local.set({
+                [StorageManager.MANUAL_LOCATION_KEY]: coordinates
+            });
+        } catch (error) {
+            console.error('Failed to save manual location:', error);
+        }
+    }
+
+    async getManualLocation(): Promise<Coordinates | null> {
+        try {
+            const result = await browser.storage.local.get(StorageManager.MANUAL_LOCATION_KEY);
+            return result[StorageManager.MANUAL_LOCATION_KEY] || null;
+        } catch (error) {
+            console.error('Failed to get manual location:', error);
+            return null;
+        }
+    }
+
+    async clearManualLocation(): Promise<void> {
+        try {
+            await browser.storage.local.remove(StorageManager.MANUAL_LOCATION_KEY);
+        } catch (error) {
+            console.error('Failed to clear manual location:', error);
         }
     }
 }

@@ -19,13 +19,13 @@ export default function PrayerCard({
 	const nextPrayerTime = convertTo12HourFormat(nextPrayer.time);
 
 	return (
-		<div className="p-4 bg-dark-surface bg-linear-180 from-offwhite-light to-dark-surface shadow-[0_2px_10px_rgba(0,0,0,0.1)]">
+		<div className="p-4 prayer-card">
 			{/* Prayer Titles */}
 			<div className="flex justify-between items-center pb-2">
-				<h3 className="text-lg font-medium animate-fade-in">
+				<h3 className="text-lg font-medium text-gray-900 dark:text-text-light">
 					{prevPrayer.name ?? "Loading..."}
 				</h3>
-				<h3 className="text-lg font-medium animate-fade-in">
+				<h3 className="text-lg font-medium text-gray-900 dark:text-text-light">
 					{nextPrayer.name ?? "Loading..."}
 				</h3>
 			</div>
@@ -38,10 +38,10 @@ export default function PrayerCard({
 
 			{/* Prayer Times */}
 			<div className="pt-4 flex justify-between items-center">
-				<h3 className="text-lg font-medium animate-fade-in">
+				<h3 className="text-lg font-medium text-gray-900 dark:text-text-light">
 					{prevPrayerTime ?? "Loading..."}
 				</h3>
-				<h3 className="text-lg font-medium animate-fade-in">
+				<h3 className="text-lg font-medium text-gray-900 dark:text-text-light">
 					{nextPrayerTime ?? "Loading..."}
 				</h3>
 			</div>

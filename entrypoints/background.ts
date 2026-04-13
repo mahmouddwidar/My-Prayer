@@ -1,5 +1,6 @@
 import { PrayerService } from '@/api/services/prayerService';
 import { GeolocationService } from '@/api/services/geolocationService';
+import { NotificationService } from '@/api/services/notificationService';
 import { NotificationScheduler } from '@/utils/notificationScheduler';
 import { DailyUpdater } from '@/utils/dailyUpdater';
 import { PrayerTime } from '@/types/prayer';
@@ -7,7 +8,7 @@ import { Coordinates } from '@/types/api';
 import { browser } from 'wxt/browser';
 
 export default defineBackground(() => {
-  console.log('My Prayer Background Service Started');
+  console.log('🙏 My Prayer Background Service Started');
 
   // Initialize services
   const prayerService = new PrayerService();
@@ -18,126 +19,125 @@ export default defineBackground(() => {
   // Handle extension installation
   browser.runtime.onInstalled.addListener(handleInstallation);
 
-  // Handle alarms (prayer notifications)
+  // Handle alarms (prayer notifications & daily updates)
   browser.alarms.onAlarm.addListener(handleAlarm);
 
-  // Listen for messages from popup
+  // Listen for messages from popup/options
   browser.runtime.onMessage.addListener(handleMessages);
 
-  // Listen for storage changes (notification toggle)
+  // Listen for storage changes (notification settings, location)
   browser.storage.onChanged.addListener(handleStorageChange);
 
   // Initialize on startup
   initializeBackgroundServices();
 });
 
+// ========== EVENT HANDLERS ==========
+
 async function handleInstallation(details: Browser.runtime.InstalledDetails) {
   console.log('Installation reason:', details.reason);
 
-  // Set side panel behavior
-  // await Browser.sidePanel.setPanelBehavior({
-  //   openPanelOnActionClick: true
-  // });
-
-  // if (details.reason === 'install') {
-  //   // Show welcome page on first install
-  //   await Browser.sidePanel.setOptions({
-  //     path: 'sidepanel/welcome.html'
-  //   });
-
-    // Set default notification permission
-    await browser.storage.local.set({
-      options: { notification: false }
-    });
-
-    // Request notification permission
-    if (Notification.permission !== 'granted') {
-      await Notification.requestPermission();
-    }
+  // Request notification permission on install
+  if (Notification.permission !== 'granted') {
+    await Notification.requestPermission();
   }
 
   // Schedule daily update
-  scheduleDailyUpdate();
+  await scheduleDailyUpdate();
+}
 
+/**
+ * Handle alarm triggers
+ * - dailyPrayerUpdate: Refresh prayer times and reschedule alarms
+ * - prayer-*: Show notification for specific prayer
+ */
 async function handleAlarm(alarm: Browser.alarms.Alarm) {
+  console.log(`⏰ Alarm triggered: ${alarm.name}`);
+
   if (alarm.name === 'dailyPrayerUpdate') {
-    console.log('Daily update triggered');
     await updateAllPrayerTimes();
-    scheduleDailyUpdate(); // Reschedule for next day
-  } else if (alarm.name.startsWith('prayer-')) {
-    const prayerName = alarm.name.replace('prayer-', '');
-    await showPrayerNotification(prayerName);
+    await scheduleDailyUpdate();
+  } else if (NotificationService.isPrayerAlarm(alarm.name)) {
+    const prayerName = NotificationService.getPrayerNameFromAlarm(alarm.name);
+    await NotificationService.showNotification(prayerName);
   }
 }
 
+/**
+ * Handle messages from popup and options pages
+ */
 async function handleMessages(
   message: any,
   sender: Browser.runtime.MessageSender,
   sendResponse: (response?: any) => void
 ) {
-  console.log('Background received:', message.type);
+  console.log('📬 Background received message:', message.type);
 
-  switch (message.type) {
-    case 'GET_PRAYER_TIMES':
-      try {
+  try {
+    switch (message.type) {
+      case 'GET_PRAYER_TIMES':
         const times = await getPrayerTimesForLocation();
         sendResponse({ success: true, data: times });
-      } catch (error) {
-        sendResponse({ success: false, error: (error as Error).message });
-      }
-      return true;
+        return true;
 
-    case 'UPDATE_LOCATION':
-      try {
+      case 'UPDATE_LOCATION':
         await updateLocation(message.coordinates);
         sendResponse({ success: true });
-      } catch (error) {
-        sendResponse({ success: false, error: error.message });
-      }
-      return true;
+        return true;
 
-    case 'TOGGLE_NOTIFICATIONS':
-      try {
-        await toggleNotifications(message.enabled);
+      case 'RESCHEDULE_ALARMS':
+        // Reschedule all alarms when notification settings change
+        console.log('🔄 Rescheduling alarms due to settings change...');
+        const prayerTimes = await getPrayerTimesForLocation();
+        await notificationScheduler.scheduleAll(prayerTimes);
         sendResponse({ success: true });
-      } catch (error) {
-        sendResponse({ success: false, error: error.message });
-      }
-      return true;
+        return true;
 
-    case 'OPEN_SIDEPANEL':
-      try {
-        await openSidePanel(sender.tab?.windowId);
+      case 'SETTINGS_UPDATED':
+        // Just log settings update, storage listener will handle reschedule
+        console.log('⚙️ Settings updated:', message.settings);
         sendResponse({ success: true });
-      } catch (error) {
-        sendResponse({ success: false, error: error.message });
-      }
-      return true;
+        return true;
+
+      default:
+        sendResponse({ success: false, error: 'Unknown message type' });
+    }
+  } catch (error) {
+    console.error('Error handling message:', error);
+    sendResponse({ success: false, error: (error as Error).message });
   }
 }
 
+/**
+ * Handle storage changes from all contexts
+ */
 async function handleStorageChange(
-  changes: { [key: string]: Browser.storage.StorageChange },
+  changes: { [key: string]: browser.storage.StorageChange },
   areaName: string
 ) {
   if (areaName !== 'local') return;
 
-  // Handle notification toggle
-  if (changes.options?.newValue?.notification !== undefined) {
-    const enabled = changes.options.newValue.notification;
-    await toggleNotifications(enabled);
+  // Handle notification settings changes
+  if (changes.notificationSettings) {
+    console.log('🔔 Notification settings changed:', changes.notificationSettings.newValue);
+    const prayerTimes = await getPrayerTimesForLocation();
+    await notificationScheduler.scheduleAll(prayerTimes);
   }
 
-  // Handle location changes
-  if (changes.location) {
-    await onLocationChange(changes.location.newValue);
+  // Handle manual location changes (with coordinates)
+  if (changes.manualLocation) {
+    console.log('📍 Manual location changed:', changes.manualLocation.newValue);
+    await onLocationChange(changes.manualLocation.newValue);
   }
 }
 
 // ========== CORE FUNCTIONS ==========
 
+/**
+ * Initialize background services on startup
+ */
 async function initializeBackgroundServices() {
-  console.log('Initializing background services...');
+  console.log('🚀 Initializing background services...');
 
   try {
     // Load existing prayer times
@@ -145,31 +145,34 @@ async function initializeBackgroundServices() {
 
     if (!hasData) {
       await fetchInitialPrayerTimes();
+    } else {
+      // Ensure alarms are scheduled for existing prayer times
+      const prayerTimes = await getPrayerTimesForLocation();
+      await notificationScheduler.scheduleAll(prayerTimes);
     }
 
-    // Set up notifications if enabled
-    const options = await getOptions();
-    if (options.notification) {
-      await setupPrayerNotifications();
+    // Schedule daily update if not already scheduled
+    const dailyAlarm = await browser.alarms.get('dailyPrayerUpdate');
+    if (!dailyAlarm) {
+      await scheduleDailyUpdate();
     }
 
-    console.log('Background services initialized');
+    console.log('✅ Background services initialized');
   } catch (error) {
-    console.error('Failed to initialize services:', error);
+    console.error('❌ Failed to initialize services:', error);
   }
 }
 
+/**
+ * Get prayer times for current or default location
+ */
 async function getPrayerTimesForLocation(): Promise<PrayerTime[]> {
   const geolocationService = new GeolocationService();
   const prayerService = new PrayerService();
 
   try {
-    // Get current location
     const coordinates = await geolocationService.getCurrentLocation();
-
-    // Fetch prayer times
     const prayerTimes = await prayerService.getPrayerTimes(coordinates);
-
     return prayerTimes;
   } catch (error) {
     console.error('Failed to get prayer times:', error);
@@ -180,174 +183,122 @@ async function getPrayerTimesForLocation(): Promise<PrayerTime[]> {
   }
 }
 
+/**
+ * Update location and refresh prayer times
+ */
 async function updateLocation(coordinates: Coordinates) {
   const geolocationService = new GeolocationService();
   const prayerService = new PrayerService();
 
-  // Save location
-  await geolocationService.setManualLocation(coordinates);
+  try {
+    // Save location
+    await geolocationService.setManualLocation(coordinates);
 
-  // Update prayer times
-  const prayerTimes = await prayerService.getPrayerTimes(coordinates, true);
+    // Update prayer times
+    const prayerTimes = await prayerService.getPrayerTimes(coordinates, true);
 
-  // Update notifications if enabled
-  const options = await getOptions();
-  if (options.notification) {
-    await schedulePrayerNotifications(prayerTimes);
-  }
-
-  return prayerTimes;
-}
-
-async function toggleNotifications(enabled: boolean) {
-  const notificationScheduler = new NotificationScheduler();
-
-  if (enabled) {
-    // Get current prayer times
-    const prayerTimes = await getPrayerTimesForLocation();
-
-    // Schedule notifications
+    // Reschedule notifications for new location
     await notificationScheduler.scheduleAll(prayerTimes);
 
-    console.log('Notifications enabled');
-  } else {
-    // Clear all prayer notifications
-    await notificationScheduler.clearAll();
-
-    console.log('Notifications disabled');
-  }
-}
-
-async function showPrayerNotification(prayerName: string) {
-  const options = await getOptions();
-
-  if (!options.notification) return;
-
-  // Create notification
-  await browser.notifications.create(`prayer-${Date.now()}`, {
-    type: 'basic',
-    // iconUrl: browser.runtime.getURL('public/icon/icon-128.png'),
-    title: `🕌 ${prayerName} Prayer Time`,
-    message: `It's time for ${prayerName} prayer`,
-    priority: 2,
-    requireInteraction: true,
-    buttons: [
-      { title: 'Open Prayer Times' },
-      { title: 'Snooze (5 min)' }
-    ]
-  });
-
-  // Handle notification clicks
-  browser.notifications.onClicked.addListener((notificationId) => {
-    if (notificationId.includes('prayer-')) {
-      browser.action.openPopup();
-    }
-  });
-
-  browser.notifications.onButtonClicked.addListener((notificationId, buttonIndex) => {
-    if (notificationId.includes('prayer-')) {
-      if (buttonIndex === 0) {
-        browser.action.openPopup();
-      } else if (buttonIndex === 1) {
-        // Snooze logic
-        browser.alarms.create(`prayer-${prayerName}-snooze`, {
-          delayInMinutes: 5
-        });
-      }
-    }
-  });
-}
-
-async function openSidePanel(windowId?: number) {
-  try {
-    if (windowId) {
-      await browser.sidePanel.open({ windowId });
-    } else {
-      const currentWindow = await browser.windows.getCurrent();
-      await browser.sidePanel.open({ windowId: currentWindow.id });
-    }
+    console.log('✅ Location updated and alarm rescheduled');
+    return prayerTimes;
   } catch (error) {
-    console.error('Failed to open side panel:', error);
+    console.error('Failed to update location:', error);
+    throw error;
   }
 }
 
-// ========== HELPER FUNCTIONS ==========
-
-async function checkExistingData(): Promise<boolean> {
-  const storage = await browser.storage.local.get(['prayerTimes', 'location']);
-  return !!(storage.prayerTimes && storage.location);
-}
-
-async function fetchInitialPrayerTimes() {
-  try {
-    const prayerTimes = await getPrayerTimesForLocation();
-    await browser.storage.local.set({
-      prayerTimes,
-      lastUpdated: new Date().toISOString()
-    });
-  } catch (error) {
-    console.error('Failed to fetch initial prayer times:', error);
-  }
-}
-
-async function setupPrayerNotifications() {
-  const notificationScheduler = new NotificationScheduler();
-  const prayerTimes = await getPrayerTimesForLocation();
-  await notificationScheduler.scheduleAll(prayerTimes);
-}
-
-async function scheduleDailyUpdate() {
-  // Clear existing daily alarm
-  await browser.alarms.clear('dailyPrayerUpdate');
-
-  // Schedule for next midnight
-  const now = new Date();
-  const tomorrow = new Date(now);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  tomorrow.setHours(0, 0, 0, 0);
-
-  const delayInMinutes = (tomorrow.getTime() - now.getTime()) / (1000 * 60);
-
-  await browser.alarms.create('dailyPrayerUpdate', {
-    delayInMinutes,
-    periodInMinutes: 24 * 60 // Repeat daily
-  });
-
-  console.log(`Daily update scheduled for ${tomorrow.toLocaleString()}`);
-}
-
+/**
+ * Update all prayer times (daily)
+ * Called by daily update alarm
+ */
 async function updateAllPrayerTimes() {
   const prayerService = new PrayerService();
   const geolocationService = new GeolocationService();
 
   try {
+    console.log('📅 Running daily prayer time update...');
+
     // Get current location
     const coordinates = await geolocationService.getCurrentLocation();
 
-    // Update prayer times
+    // Update prayer times (force refresh)
     const prayerTimes = await prayerService.getPrayerTimes(coordinates, true);
 
-    // Update notifications if enabled
-    const options = await getOptions();
-    if (options.notification) {
-      const notificationScheduler = new NotificationScheduler();
-      await notificationScheduler.scheduleAll(prayerTimes);
-    }
+    // Reschedule alarms for new times
+    await notificationScheduler.scheduleAll(prayerTimes);
 
-    console.log('Daily prayer times updated');
+    console.log('✅ Daily prayer times updated successfully');
   } catch (error) {
-    console.error('Failed to update prayer times:', error);
+    console.error('❌ Failed to update prayer times:', error);
   }
 }
 
-async function schedulePrayerNotifications(prayerTimes: PrayerTime[]) {
-  const notificationScheduler = new NotificationScheduler();
-  await notificationScheduler.scheduleAll(prayerTimes);
+/**
+ * Schedule daily alarm at midnight
+ */
+async function scheduleDailyUpdate() {
+  try {
+    // Clear existing daily alarm
+    await browser.alarms.clear('dailyPrayerUpdate');
+
+    // Calculate delay until next midnight
+    const now = new Date();
+    const tomorrow = new Date(now);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(0, 0, 0, 0);
+
+    const delayInMinutes = (tomorrow.getTime() - now.getTime()) / (1000 * 60);
+
+    await browser.alarms.create('dailyPrayerUpdate', {
+      delayInMinutes,
+      periodInMinutes: 24 * 60, // Repeat daily
+    });
+
+    console.log(`📅 Daily update scheduled for ${tomorrow.toLocaleString()}`);
+  } catch (error) {
+    console.error('Failed to schedule daily update:', error);
+  }
 }
 
-async function getOptions(): Promise<{ notification: boolean }> {
-  const storage = await browser.storage.local.get('options');
-  return storage.options || { notification: false };
+/**
+ * Handle location change from storage
+ */
+async function onLocationChange(newLocation: Coordinates) {
+  try {
+    console.log('🔄 Location change detected, updating prayer times...');
+    await updateLocation(newLocation);
+  } catch (error) {
+    console.error('Failed to handle location change:', error);
+  }
+}
+
+// ========== HELPER FUNCTIONS ==========
+
+/**
+ * Check if prayer times already exist in storage
+ */
+async function checkExistingData(): Promise<boolean> {
+  const storage = await browser.storage.local.get(['prayerTimes']);
+  return !!storage.prayerTimes;
+}
+
+/**
+ * Fetch and store initial prayer times on first run
+ */
+async function fetchInitialPrayerTimes() {
+  try {
+    console.log('🏗️ Fetching initial prayer times...');
+    const prayerTimes = await getPrayerTimesForLocation();
+    await browser.storage.local.set({
+      prayerTimes,
+      lastUpdated: new Date().toISOString(),
+    });
+    console.log('✅ Initial prayer times fetched and stored');
+  } catch (error) {
+    console.error('Failed to fetch initial prayer times:', error);
+  }
+}
 }
 
 async function onLocationChange(newLocation: Coordinates) {

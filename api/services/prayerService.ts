@@ -14,6 +14,7 @@ export class PrayerService {
     private client: AladhanClient;
     private geoClient: BigDataCloudClient;
     private storage: StorageManager;
+    private lastFetchedCoordinates: Coordinates | null = null;
 
     constructor() {
         this.client = new AladhanClient();
@@ -102,10 +103,22 @@ export class PrayerService {
     ): Promise<PrayerTime[]> {
         // Check if we have cached data and it's not expired
         const cachedData = await this.storage.getPrayerData();
-        const shouldRefresh = forceRefresh || !cachedData || this.isDataExpired(cachedData);
+        const cachedCoordinates = await this.storage.getCoordinates();
+
+        // Determine if we need to refresh based on:
+        // 1. forceRefresh flag
+        // 2. No cached data
+        // 3. Data expired (different date)
+        // 4. LOCATION CHANGED (different coordinates)
+        const locationChanged = coordinates && cachedCoordinates &&
+            (Math.abs(coordinates.latitude - cachedCoordinates.latitude) > 0.01 ||
+                Math.abs(coordinates.longitude - cachedCoordinates.longitude) > 0.01);
+
+        const shouldRefresh = forceRefresh || !cachedData || this.isDataExpired(cachedData) || locationChanged;
 
         if (shouldRefresh && coordinates) {
             await this.fetchAndStorePrayerTimes(coordinates);
+            this.lastFetchedCoordinates = coordinates;
         }
 
         const data = await this.storage.getPrayerData();
