@@ -28,7 +28,10 @@ export default defineConfig({
       'notifications',     // Show prayer notifications
       'sidePanel',         // Open prayer details sidebar
       'offscreen',           // For background audio/notifications
-      'action'             // Toolbar button
+      'action',             // Toolbar button
+      "runtime",
+      "windows",
+      "tabs",
     ],
 
     // Host permissions for API calls
@@ -52,9 +55,9 @@ export default defineConfig({
     },
 
     // Side panel configuration
-    // side_panel: {
-    //   default_path: 'sidepanel/index.html'
-    // },
+    "side_panel": {
+      "default_path": './entrypoints/sidebar/index.html'
+    },
 
     // Options page
     "options_page": './entrypoints/options/index.html',

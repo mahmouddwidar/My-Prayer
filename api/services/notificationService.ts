@@ -121,7 +121,7 @@ export class NotificationService {
 
             await browser.notifications.create(notificationId, {
                 type: 'basic',
-                iconUrl: browser.runtime.getURL('public/icon/icon-128.png'),
+                iconUrl: browser.runtime.getURL("/icon/128.png"),
                 title: `🕌 ${prayerName} Prayer Time`,
                 message: `It's time for ${prayerName} prayer`,
                 priority: 2,
@@ -134,10 +134,10 @@ export class NotificationService {
                 this.playNotificationSound();
             }
 
-            // Vibrate if enabled
-            if (settings.vibration && 'vibrate' in navigator) {
-                navigator.vibrate([200, 100, 200]);
-            }
+            // // Vibrate if enabled
+            // if (settings.vibration && 'vibrate' in navigator) {
+            //     navigator.vibrate([200, 100, 200]);
+            // }
 
             console.log(`🔔 Notification shown for ${prayerName}`);
 

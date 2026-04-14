@@ -8,7 +8,6 @@ export interface NotificationSettings {
     enabled: boolean;
     prayers: Record<PrayerName, boolean>;
     sound: boolean;
-    vibration: boolean;
 }
 
 export interface NotificationConfig {
@@ -32,7 +31,6 @@ export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
         Isha: true,
     },
     sound: true,
-    vibration: true,
 };
 
 /**

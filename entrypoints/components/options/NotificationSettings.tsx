@@ -80,7 +80,7 @@ export function NotificationSettings() {
 						<h4 className="font-semibold text-gray-900 dark:text-white px-2">
 							Prayer Notifications
 						</h4>
-						<div className="space-y-2 bg-white/40 dark:bg-[#0f3460]/40 rounded-xl p-4 border border-yellow-100/10 dark:border-white/5">
+						<div className="space-y-2 rounded-xl p-4 bg-[#f8f8f836] dark:hover:bg-[#15191f] rounded-xl backdrop-blur-md hover:bg-[#fbfdf4] dark:bg-[#131416] transition-colors border border-gray-100 dark:border-white/10 ">
 							{notifiablePrayers.map((prayerName) => (
 								<PrayerNotificationToggle
 									key={prayerName}
@@ -143,7 +143,7 @@ function PrayerNotificationToggle({
 	};
 
 	return (
-		<label className="flex items-center gap-3 p-3 cursor-pointer hover:bg-white/30 dark:hover:bg-white/5 rounded-lg transition-colors">
+		<label className="flex items-center gap-3 p-3 cursor-pointer border border-gray-200 dark:border-[#2e2e3046] dark:hover:border-[#131416] hover:border-gray-300  hover:bg-white/30 dark:hover:bg-white/5 rounded-lg transition-colors">
 			<input
 				type="checkbox"
 				checked={enabled}

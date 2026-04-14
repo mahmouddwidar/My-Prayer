@@ -7,14 +7,15 @@ import { PrayerTime } from '@/types/prayer';
 import { Coordinates } from '@/types/api';
 import { browser } from 'wxt/browser';
 
+// Initialize services
+const prayerService = new PrayerService();
+const geolocationService = new GeolocationService();
+const notificationScheduler = new NotificationScheduler();
+const dailyUpdater = new DailyUpdater(prayerService);
+
 export default defineBackground(() => {
   console.log('🙏 My Prayer Background Service Started');
 
-  // Initialize services
-  const prayerService = new PrayerService();
-  const geolocationService = new GeolocationService();
-  const notificationScheduler = new NotificationScheduler();
-  const dailyUpdater = new DailyUpdater(prayerService);
 
   // Handle extension installation
   browser.runtime.onInstalled.addListener(handleInstallation);
@@ -122,6 +123,7 @@ async function handleStorageChange(
     console.log('🔔 Notification settings changed:', changes.notificationSettings.newValue);
     const prayerTimes = await getPrayerTimesForLocation();
     await notificationScheduler.scheduleAll(prayerTimes);
+
   }
 
   // Handle manual location changes (with coordinates)
@@ -299,16 +301,16 @@ async function fetchInitialPrayerTimes() {
     console.error('Failed to fetch initial prayer times:', error);
   }
 }
-}
 
-async function onLocationChange(newLocation: Coordinates) {
-  // Update prayer times for new location
-  const prayerService = new PrayerService();
-  const prayerTimes = await prayerService.getPrayerTimes(newLocation, true);
 
-  // Reschedule notifications if enabled
-  const options = await getOptions();
-  if (options.notification) {
-    await schedulePrayerNotifications(prayerTimes);
-  }
-}
+// async function onLocationChange(newLocation: Coordinates) {
+//   // Update prayer times for new location
+//   const prayerService = new PrayerService();
+//   const prayerTimes = await prayerService.getPrayerTimes(newLocation, true);
+
+//   // Reschedule notifications if enabled
+//   const options = await getOptions();
+//   if (options.notification) {
+//     await schedulePrayerNotifications(prayerTimes);
+//   }
+// }

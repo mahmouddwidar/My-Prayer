@@ -1,4 +1,5 @@
 import { DateInfo } from "@/types/prayer";
+import { OpenSidebarButton } from "./OpenSidebarButton";
 
 export const DateCard = ({ weekday, day, month }: DateInfo) => {
 	return (
@@ -19,6 +20,15 @@ export const DateCard = ({ weekday, day, month }: DateInfo) => {
 					{day}
 				</h1>
 				<h6 className="text-xl animate-fade-in">{month}</h6>
+				<div
+					style={{
+						marginTop: "1rem",
+						borderTop: "1px solid #e0e0e0",
+						paddingTop: "1rem",
+					}}
+				>
+					{/* <OpenSidebarButton label="📖 Open Sidebar" /> */}
+				</div>
 			</div>
 		</div>
 	);
