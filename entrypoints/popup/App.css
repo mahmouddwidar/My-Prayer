@@ -125,7 +125,7 @@
 
 	.glass-card:hover {
 		/* background: rgba(255, 255, 255, 0.95); */
-		background: #FFF;
+		background: #fff;
 		border-color: rgba(255, 193, 7, 0.35);
 		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
 	}
@@ -311,5 +311,42 @@
 
 	.dark ::-webkit-scrollbar-track {
 		background: rgba(255, 255, 255, 0.05);
+	}
+
+	/* Open Sidebar Button Styles */
+	.open-sidebar-button {
+		background: linear-gradient(
+			135deg,
+			var(--color-primary) 0%,
+			var(--color-primary-dark) 100%
+		);
+		color: #000;
+		border: none;
+		padding: 0.75rem 1.5rem;
+		border-radius: 0.5rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.3s ease;
+		box-shadow: 0 2px 8px rgba(255, 193, 7, 0.3);
+		font-size: 0.95rem;
+	}
+
+	.open-sidebar-button:hover {
+		background: linear-gradient(
+			135deg,
+			var(--color-primary-dark) 0%,
+			var(--color-primary) 100%
+		);
+		box-shadow: 0 4px 12px rgba(255, 193, 7, 0.5);
+		transform: translateY(-2px);
+	}
+
+	.open-sidebar-button:active {
+		transform: translateY(0);
+		box-shadow: 0 2px 4px rgba(255, 193, 7, 0.3);
+	}
+
+	.dark .open-sidebar-button {
+		color: #000;
 	}
 }

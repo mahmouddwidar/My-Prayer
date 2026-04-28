@@ -2,6 +2,7 @@ import "../popup/App.css";
 import { useEffect } from "react";
 import { DateCard } from "../components/DateCard";
 import PrayerCard from "../components/PrayerCard";
+import { OpenSidebarButton } from "../components/OpenSidebarButton";
 import { usePrayerTimes } from "@/hooks/usePrayerTimes";
 import { useRealtimePrayerTimes } from "@/hooks/useRealtimePrayerTimes";
 import PopupSkeleton from "../components/skeletons/PopupSkeleton";
@@ -62,6 +63,10 @@ function App() {
 					nextPrayer={next}
 					progress={progress}
 				/>
+			</div>
+			{/* Open Sidebar Button */}
+			<div className="flex justify-center p-4">
+				<OpenSidebarButton label="📖 View Full Details" />
 			</div>
 		</div>
 	);

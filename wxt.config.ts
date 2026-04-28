@@ -1,11 +1,15 @@
 import { defineConfig } from 'wxt';
 import tailwindcss from '@tailwindcss/vite'
 
-// See https://wxt.dev/api/config.html
-
-
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
+  entrypoints: [
+    'entrypoints/popup/main.tsx',
+    'entrypoints/options/index.tsx',
+    'entrypoints/sidebar/index.tsx',
+    'entrypoints/background.ts',
+    'entrypoints/content.ts',
+  ],
   vite: () => ({
     plugins: [
       tailwindcss(),
@@ -20,21 +24,19 @@ export default defineConfig({
       email: 'mahmouddwidar23@gmail.com'
     },
 
-    // Required permissions
     permissions: [
-      'storage',           // Store prayer times and settings
-      'geolocation',       // Get user's location
-      'alarms',            // Schedule prayer notifications
-      'notifications',     // Show prayer notifications
-      'sidePanel',         // Open prayer details sidebar
-      'offscreen',           // For background audio/notifications
-      'action',             // Toolbar button
+      'storage',
+      'geolocation',
+      'alarms',
+      'notifications',
+      'sidePanel',
+      'offscreen',
+      'action',
       "runtime",
       "windows",
       "tabs",
     ],
 
-    // Host permissions for API calls
     host_permissions: [
       'https://api.aladhan.com/*',
       'https://api.aladhan.com/v1/*',
@@ -44,22 +46,19 @@ export default defineConfig({
     ],
 
     "action": {
-      "default_popup": "./entrypoints/popup/App.tsx"
+      "default_popup": "popup/index.html"
     },
 
-    // Background service worker
     background: {
       service_worker: 'background.ts',
       type: 'module',
-      persistent: true  // Keep alive for notifications
     },
 
     // Side panel configuration
     "side_panel": {
-      "default_path": './entrypoints/sidebar/index.html'
+      "default_path": "sidepanel/index.html"
     },
 
-    // Options page
-    "options_page": './entrypoints/options/index.html',
+    "options_page": "options/index.html",
   },
 });

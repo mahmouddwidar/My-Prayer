@@ -1,24 +1,27 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTheme } from "@/hooks/useTheme";
 import { listenForThemeChanges, applyThemeToDOM } from "@/utils/themeManager";
-import { useSectionState } from "@/hooks/useSectionState";
-import { PrayerSection } from "./sections/PrayerSection";
-import { AzkarSection } from "./sections/AzkarSection";
 import { ThemeToggle } from "./shared/ThemeToggle";
+import { TabNavigation, TabId } from "./TabNavigation";
+import { SlideTransition } from "./SlideTransition";
+import { useSwipeHandler } from "@/hooks/useSwipeHandler";
+import { PrayerTimesScreen } from "./screens/PrayerTimesScreen";
+import { AzkarScreen } from "./screens/AzkarScreen";
 import "./Sidebar.css";
 
 /**
  * Main Sidebar Component
  *
- * Manages:
+ * Mobile-app style side panel with:
+ * - Tab-based navigation (Prayer Times & Azkar)
+ * - Smooth slide animations
+ * - Swipe gesture support
  * - Theme syncing across extension
- * - Section state (expanded/collapsed)
- * - Prayer highlighting
- * - Azkar counter state
  */
 export function Sidebar() {
 	const { theme, setTheme } = useTheme();
-	const { isExpanded, toggleSection } = useSectionState();
+	const [activeTab, setActiveTab] = useState<TabId>("prayers");
+	const containerRef = useRef<HTMLDivElement>(null);
 
 	// Listen for theme changes from other contexts (e.g., settings page)
 	useEffect(() => {
@@ -37,45 +40,66 @@ export function Sidebar() {
 			}
 		};
 
-		chrome.runtime.onMessage.addListener(handleMessage);
-		return () => chrome.runtime.onMessage.removeListener(handleMessage);
+		browser.runtime.onMessage.addListener(handleMessage);
+		return () => browser.runtime.onMessage.removeListener(handleMessage);
 	}, [setTheme]);
 
+	// Handle swipe gestures for tab switching
+	useSwipeHandler(containerRef, {
+		onSwipeLeft: () => setActiveTab("azkar"), // Swipe left = next tab
+		onSwipeRight: () => setActiveTab("prayers"), // Swipe right = previous tab
+		threshold: 50,
+		enabled: true,
+	});
+
+	const tabs: Array<{ id: TabId; label: string; icon: string }> = [
+		{ id: "prayers", label: "Prayers", icon: "🕌" },
+		{ id: "azkar", label: "Azkar", icon: "📿" },
+	];
+
+	// Determine slide direction based on tab change
+	const getSlideDirection = (tabId: TabId): "left" | "right" => {
+		const tabIndex = tabs.findIndex((t) => t.id === tabId);
+		const activeIndex = tabs.findIndex((t) => t.id === activeTab);
+		return tabIndex > activeIndex ? "left" : "right";
+	};
+
 	return (
-		<div className={`sidebar-container ${theme}`}>
+		<div
+			className={`sidebar-container ${theme}`}
+			ref={containerRef}
+			role="main"
+		>
 			{/* Header */}
-			<header className="sidebar-header">
-				<div className="header-content">
-					<h1 className="sidebar-title">My Prayer</h1>
-					<p className="sidebar-subtitle">Daily Prayers & Azkar</p>
-				</div>
-				<ThemeToggle theme={theme} onToggle={setTheme} />
+			<header>
+				{/* <ThemeToggle theme={theme} onToggle={setTheme} /> */}
 			</header>
 
-			{/* Main Content */}
+			{/* Main Content with Tab Screens */}
 			<main className="sidebar-main">
-				<PrayerSection
-					isExpanded={isExpanded("prayerTimesHeader")}
-					onToggle={() => toggleSection("prayerTimesHeader")}
-				/>
+				<SlideTransition
+					isActive={activeTab === "prayers"}
+					direction={getSlideDirection("prayers")}
+					animationDuration={300}
+				>
+					<PrayerTimesScreen />
+				</SlideTransition>
 
-				<AzkarSection
-					isExpanded={isExpanded("azkarHeader")}
-					onToggle={() => toggleSection("azkarHeader")}
-				/>
+				<SlideTransition
+					isActive={activeTab === "azkar"}
+					direction={getSlideDirection("azkar")}
+					animationDuration={300}
+				>
+					<AzkarScreen />
+				</SlideTransition>
 			</main>
 
-			{/* Footer */}
-			<footer className="sidebar-footer">
-				<a
-					href="https://github.com/mahmouddwidar/My-Prayer"
-					target="_blank"
-					rel="noopener noreferrer"
-					className="footer-link"
-				>
-					🔗 Contribute on GitHub
-				</a>
-			</footer>
+			{/* Bottom Tab Navigation */}
+			<TabNavigation
+				tabs={tabs}
+				activeTab={activeTab}
+				onTabChange={setActiveTab}
+			/>
 		</div>
 	);
 }

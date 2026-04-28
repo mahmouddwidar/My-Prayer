@@ -1,6 +1,6 @@
 /**
- * Sidebar Entrypoint for WXT
- * Main entry point for the sidebar panel
+ * Sidepanel Entrypoint for WXT
+ * Main entry point for the side panel
  * Handles theme initialization and React rendering
  */
 
@@ -10,10 +10,10 @@ import { initializeTheme, applyThemeToDOM } from "@/utils/themeManager";
 import "@/entrypoints/components/Sidebar/Sidebar.css";
 
 /**
- * Root component for sidebar
+ * Root component for sidepanel
  * WXT requires a default export that returns a React component
  */
-const SidebarApp = () => {
+const SidepanelApp = () => {
 	useEffect(() => {
 		// Initialize theme on mount
 		const initTheme = async () => {
@@ -32,4 +32,4 @@ const SidebarApp = () => {
 	return <Sidebar />;
 };
 
-export default SidebarApp;
+export default SidepanelApp;

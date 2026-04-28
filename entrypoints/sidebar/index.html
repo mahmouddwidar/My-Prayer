@@ -5,12 +5,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="Content-Security-Policy"
-        content="script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com" />
+        content="script-src 'self' http://localhost:3000; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com" />
     <title>My Prayer - Sidebar</title>
 </head>
 
 <body>
-    <!-- WXT will automatically inject the React app here -->
+    <div id="root"></div>
+    <script type="module" src="./index.tsx"></script>
 </body>
 
 </html>

@@ -36,9 +36,9 @@ export const AzkarItem = memo(
 
 		return (
 			<div className={`azkar-item ${isCompleted ? "completed" : ""}`}>
-				{azkar.subtitle && <p className="azkar-subtitle">{azkar.subtitle}</p>}
+				{azkar.subtitle && <p className="azkar-subtitle text-base">{azkar.subtitle}</p>}
 
-				<p className="azkar-text" dir="rtl">
+				<p className="azkar-text text-3xl" dir="rtl">
 					{azkar.text}
 				</p>
 

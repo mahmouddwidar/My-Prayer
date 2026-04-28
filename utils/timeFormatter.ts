@@ -19,3 +19,8 @@ export function convertTo12HourFormat(time24: string): string {
 
     return `${hour}:${minutes.padStart(2, "0")} ${period}`;
 }
+
+/**
+ * Alias for convertTo12HourFormat for convenience
+ */
+export const formatTime = convertTo12HourFormat;

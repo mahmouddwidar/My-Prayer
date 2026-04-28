@@ -28,24 +28,37 @@ export const OpenSidebarButton = memo(function OpenSidebarButton({
 }: OpenSidebarButtonProps) {
 	const handleOpenSidebar = useCallback(() => {
 		try {
-			// Option 1: Open in new popup window (Universal)
+			// Primary: Use native side panel (Chrome 114+, Edge)
+			if (chrome.sidePanel) {
+				chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+					if (tabs[0]?.id) {
+						chrome.sidePanel.open({ tabId: tabs[0].id }).catch(() => {
+							// Fallback if sidePanel fails
+							fallbackOpenSidebar();
+						});
+					}
+				});
+			} else {
+				// Fallback for older browsers
+				fallbackOpenSidebar();
+			}
+		} catch (error) {
+			console.error("Failed to open sidebar:", error);
+			fallbackOpenSidebar();
+		}
+	}, [windowWidth, windowHeight]);
+
+	const fallbackOpenSidebar = useCallback(() => {
+		try {
+			// Fallback: Open in new popup window
 			chrome.windows.create({
 				url: chrome.runtime.getURL("sidebar.html"),
 				type: "popup",
 				width: windowWidth,
 				height: windowHeight,
 			});
-
-			// Option 2: If using Chrome 114+ with sidePanel
-			// Uncomment to use side panel instead:
-			// chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-			//   if (tabs[0]?.id) {
-			//     chrome.sidePanel.open({ tabId: tabs[0].id });
-			//   }
-			// });
-		} catch (error) {
-			console.error("Failed to open sidebar:", error);
-			// Fallback: Open in new tab
+		} catch {
+			// Last resort: Open in new tab
 			chrome.tabs.create({
 				url: chrome.runtime.getURL("sidebar.html"),
 			});
