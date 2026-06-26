@@ -1,15 +1,20 @@
 const DEFAULT_OPTIONS = {
 	notification: false,
 	selectedPrayers: ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"],
-	locationMode: "auto",
 	latitude: "",
 	longitude: "",
+	city: "",
+	country: "",
+	timezone: "",
 	theme: "system",
 	sound: "soft",
 };
 
+const NOMINATIM_BASE = "https://nominatim.openstreetmap.org/search";
+const LOCATION_SEARCH_DELAY = 320;
 let currentOptions = { ...DEFAULT_OPTIONS };
 let statusTimer;
+let locationSearchTimer = null;
 
 function getStorageApi() {
 	if (typeof chrome !== "undefined" && chrome.storage?.local) {
@@ -64,13 +69,14 @@ const elements = {
 	),
 	soundSelect: document.getElementById("soundSelect"),
 	themeButtons: Array.from(document.querySelectorAll("[data-theme-option]")),
-	locationModeButtons: Array.from(
-		document.querySelectorAll("[data-location-mode]"),
-	),
-	latitudeInput: document.getElementById("latitudeInput"),
-	longitudeInput: document.getElementById("longitudeInput"),
-	detectButton: document.getElementById("detectButton"),
-	saveLocationButton: document.getElementById("saveLocationButton"),
+	locationSearchInput: document.getElementById("locationSearchInput"),
+	locationSuggestions: document.getElementById("locationSuggestions"),
+	locationStatus: document.getElementById("locationStatus"),
+	locationLoader: document.getElementById("locationLoader"),
+	locationSummary: document.getElementById("locationSummary"),
+	locationName: document.getElementById("locationName"),
+	locationMeta: document.getElementById("locationMeta"),
+	clearLocationButton: document.getElementById("clearLocationButton"),
 	refreshButton: document.getElementById("refreshButton"),
 	saveStatus: document.getElementById("saveStatus"),
 	previewTitle: document.getElementById("previewTitle"),
@@ -116,19 +122,17 @@ function bindEvents() {
 		});
 	});
 
-	elements.locationModeButtons.forEach((button) => {
-		button.addEventListener("click", () => {
-			const mode = button.dataset.locationMode;
-			currentOptions.locationMode = mode;
-			saveSettings({ locationMode: mode });
-			updateLocationModeButtons();
-		});
-	});
-
-	elements.detectButton?.addEventListener("click", handleAutoDetect);
-	elements.saveLocationButton?.addEventListener(
+	elements.locationSearchInput?.addEventListener(
+		"input",
+		handleLocationSearchInput,
+	);
+	elements.locationSuggestions?.addEventListener(
 		"click",
-		handleManualLocationSave,
+		handleSuggestionClick,
+	);
+	elements.clearLocationButton?.addEventListener(
+		"click",
+		clearLocationSelection,
 	);
 	elements.refreshButton?.addEventListener("click", handleRefresh);
 }
@@ -152,6 +156,7 @@ async function loadSettings() {
 
 		populateForm();
 		applyTheme(currentOptions.theme);
+		updateLocationSearchState();
 		updatePreview();
 	} catch (error) {
 		console.error("Failed to load settings", error);
@@ -166,19 +171,11 @@ function populateForm() {
 	});
 
 	elements.soundSelect.value = currentOptions.sound || "soft";
-	elements.latitudeInput.value = currentOptions.latitude || "";
-	elements.longitudeInput.value = currentOptions.longitude || "";
-	updateLocationModeButtons();
+	elements.locationSearchInput.value = currentOptions.city
+		? `${currentOptions.city}, ${currentOptions.country || ""}`
+		: "";
 	updateThemeButtons();
-}
-
-function updateLocationModeButtons() {
-	elements.locationModeButtons.forEach((button) => {
-		button.classList.toggle(
-			"active",
-			button.dataset.locationMode === currentOptions.locationMode,
-		);
-	});
+	renderLocationSummary();
 }
 
 function updateThemeButtons() {
@@ -226,59 +223,6 @@ function showStatus(message) {
 	}, 1400);
 }
 
-async function handleAutoDetect() {
-	if (!navigator.geolocation) {
-		showStatus("Geolocation is not available");
-		return;
-	}
-
-	try {
-		const position = await new Promise((resolve, reject) => {
-			navigator.geolocation.getCurrentPosition(resolve, reject);
-		});
-
-		const latitude = position.coords.latitude.toFixed(5);
-		const longitude = position.coords.longitude.toFixed(5);
-
-		currentOptions.latitude = latitude;
-		currentOptions.longitude = longitude;
-		currentOptions.locationMode = "auto";
-
-		elements.latitudeInput.value = latitude;
-		elements.longitudeInput.value = longitude;
-		updateLocationModeButtons();
-
-		await writePersistentSettings({ latitude, longitude });
-		await saveSettings({ latitude, longitude, locationMode: "auto" });
-	} catch (error) {
-		console.error("Geolocation failed", error);
-		showStatus("Location unavailable");
-	}
-}
-
-async function handleManualLocationSave() {
-	const latitude = elements.latitudeInput.value.trim();
-	const longitude = elements.longitudeInput.value.trim();
-
-	if (!latitude || !longitude) {
-		showStatus("Enter both coordinates");
-		return;
-	}
-
-	currentOptions.latitude = latitude;
-	currentOptions.longitude = longitude;
-	currentOptions.locationMode = "manual";
-
-	try {
-		await writePersistentSettings({ latitude, longitude });
-		await saveSettings({ latitude, longitude, locationMode: "manual" });
-		updateLocationModeButtons();
-	} catch (error) {
-		console.error("Failed to save manual location", error);
-		showStatus("Could not save location");
-	}
-}
-
 async function handleRefresh() {
 	try {
 		if (typeof chrome !== "undefined" && chrome.runtime?.sendMessage) {
@@ -288,6 +232,219 @@ async function handleRefresh() {
 	} catch (error) {
 		console.error("Refresh failed", error);
 		showStatus("Refresh failed");
+	}
+}
+
+function debounce(callback, delay) {
+	clearTimeout(locationSearchTimer);
+	locationSearchTimer = window.setTimeout(callback, delay);
+}
+
+async function handleLocationSearchInput(event) {
+	const query = event.target.value.trim();
+	updateLocationSearchState();
+
+	if (!query) {
+		clearLocationSuggestions();
+		showLocationStatus("Type a city, region, or country to search.");
+		return;
+	}
+
+	showLocationStatus("Searching…");
+	showLocationLoader(true);
+
+	debounce(async () => {
+		try {
+			const suggestions = await fetchLocationSuggestions(query);
+			renderLocationSuggestions(suggestions);
+			showLocationLoader(false);
+			if (!suggestions.length) {
+				showLocationStatus("No matching locations found.", true);
+			}
+		} catch (error) {
+			console.error("Location search failed", error);
+			showLocationLoader(false);
+			showLocationStatus("Unable to fetch locations.", true);
+		}
+	}, LOCATION_SEARCH_DELAY);
+}
+
+async function fetchLocationSuggestions(query) {
+	const url = `${NOMINATIM_BASE}?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=6&extratags=1&accept-language=en`;
+	const response = await fetch(url, {
+		headers: {
+			"User-Agent": "MyPrayerExtension/1.0 (contact: example@example.com)",
+		},
+	});
+	if (!response.ok) {
+		throw new Error("Failed to fetch location suggestions");
+	}
+
+	const data = await response.json();
+	return data.map((item) => ({
+		id: item.place_id,
+		label: item.display_name,
+		latitude: item.lat,
+		longitude: item.lon,
+		country: item.address?.country || "",
+		city:
+			item.address?.city ||
+			item.address?.town ||
+			item.address?.village ||
+			item.address?.state ||
+			item.address?.county ||
+			item.address?.country ||
+			"",
+		timezone: item.extratags?.timezone || "",
+	}));
+}
+
+function renderLocationSuggestions(locations) {
+	if (!elements.locationSuggestions) return;
+	elements.locationSuggestions.innerHTML = "";
+
+	if (!locations.length) {
+		const noneItem = document.createElement("li");
+		noneItem.className = "suggestion-item";
+		noneItem.textContent = "No matching locations found.";
+		return elements.locationSuggestions.appendChild(noneItem);
+	}
+
+	locations.forEach((location) => {
+		const item = document.createElement("li");
+		item.className = "suggestion-item";
+		item.setAttribute("role", "option");
+		item.tabIndex = 0;
+		item.dataset.placeId = location.id;
+		item.dataset.latitude = location.latitude;
+		item.dataset.longitude = location.longitude;
+		item.dataset.city = location.city;
+		item.dataset.country = location.country;
+		item.dataset.timezone = location.timezone;
+
+		item.innerHTML = `
+			<span class="suggestion-title">${location.city}</span>
+			<span class="suggestion-description">${location.label}</span>
+		`;
+		elements.locationSuggestions.appendChild(item);
+	});
+}
+
+function clearLocationSuggestions() {
+	if (!elements.locationSuggestions) return;
+	elements.locationSuggestions.innerHTML = "";
+}
+
+function showLocationLoader(isLoading) {
+	if (!elements.locationLoader) return;
+	elements.locationLoader.classList.toggle("active", isLoading);
+}
+
+function showLocationStatus(message, isError = false) {
+	if (!elements.locationStatus) return;
+	elements.locationStatus.textContent = message;
+	elements.locationStatus.style.color = isError ? "#d34b4b" : "";
+}
+
+function handleSuggestionClick(event) {
+	const item = event.target.closest(".suggestion-item");
+	if (!item) return;
+
+	const latitude = item.dataset.latitude;
+	const longitude = item.dataset.longitude;
+	const city = item.dataset.city;
+	const country = item.dataset.country;
+	const timezone = item.dataset.timezone;
+
+	currentOptions.latitude = latitude;
+	currentOptions.longitude = longitude;
+	currentOptions.city = city;
+	currentOptions.country = country;
+	currentOptions.timezone = timezone;
+
+	elements.locationSearchInput.value = `${city}, ${country}`;
+	renderLocationSummary();
+	clearLocationSuggestions();
+	showLocationStatus("Location selected. Coordinates saved automatically.");
+
+	writePersistentSettings({
+		latitude,
+		longitude,
+		options: currentOptions,
+	});
+	saveSettings({
+		latitude,
+		longitude,
+		city,
+		country,
+		timezone,
+	});
+	triggerLocationRefresh();
+}
+
+function renderLocationSummary() {
+	if (!elements.locationSummary) return;
+
+	if (currentOptions.city || currentOptions.country) {
+		elements.locationSummary.hidden = false;
+		elements.locationName.textContent = `${currentOptions.city}${currentOptions.country ? `, ${currentOptions.country}` : ""}`;
+		elements.locationMeta.textContent = currentOptions.timezone
+			? `Latitude ${currentOptions.latitude}, Longitude ${currentOptions.longitude} · ${currentOptions.timezone}`
+			: `Latitude ${currentOptions.latitude}, Longitude ${currentOptions.longitude}`;
+	} else {
+		elements.locationSummary.hidden = true;
+	}
+}
+
+function clearLocationSelection() {
+	currentOptions.latitude = "";
+	currentOptions.longitude = "";
+	currentOptions.city = "";
+	currentOptions.country = "";
+	currentOptions.timezone = "";
+
+	elements.locationSearchInput.value = "";
+	clearLocationSuggestions();
+	renderLocationSummary();
+	showLocationStatus(
+		"Search for a location to save coordinates automatically.",
+	);
+
+	writePersistentSettings({
+		latitude: "",
+		longitude: "",
+		options: currentOptions,
+	});
+	saveSettings({
+		latitude: "",
+		longitude: "",
+		city: "",
+		country: "",
+		timezone: "",
+	});
+	triggerLocationRefresh();
+}
+
+function updateLocationSearchState() {
+	if (elements.locationSearchInput) {
+		elements.locationSearchInput.disabled = false;
+		elements.locationSearchInput.placeholder =
+			"Type a city, region, or country";
+	}
+
+	showLocationStatus(
+		"Search for a location to save coordinates automatically.",
+	);
+	clearLocationSuggestions();
+}
+
+function triggerLocationRefresh() {
+	if (typeof chrome !== "undefined" && chrome.runtime?.sendMessage) {
+		chrome.runtime
+			.sendMessage({ type: "refreshPrayerTimes" })
+			.catch((error) => {
+				console.error("Failed to request prayer refresh:", error);
+			});
 	}
 }
 

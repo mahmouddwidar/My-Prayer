@@ -22,92 +22,128 @@ document.addEventListener("DOMContentLoaded", () => {
 		});
 	}
 
-	if ("geolocation" in navigator) {
-		navigator.geolocation.getCurrentPosition(onSuccess, onError);
-	} else {
-		alert("Geolocation is not supported by your browser");
-		console.error("Geolocation is not supported by your browser");
-	}
-
-	function onSuccess(position) {
-		const { latitude, longitude } = position.coords;
-		chrome.storage.local.set(
-			{ latitude: latitude, longitude: longitude },
-			() => {
-				console.log("Location data saved");
-			}
-		);
-	}
-
-	function onError(error) {
-		console.error("Error getting location:", error);
-		console.log("Unable to retrieve your location");
-	}
-
 	let todayPrayerTimes;
 	let todayDates;
 	let todayTimings;
 
-	// Listen for storage changes
-	chrome.storage.onChanged.addListener((changes, namespace) => {
-		if (namespace === "local") {
-			if (
-				changes.timings ||
-				changes.hijri_day ||
-				changes.hijri_month ||
-				changes.gregorian_day
-			) {
-				getAllTimings().then(() => {
-					if (todayPrayerTimes && todayDates) {
-						updatePrayerTimes(todayPrayerTimes);
-						updateDates(todayDates);
-					}
-				});
-			}
+	const errorCard = document.getElementById("errorCard");
+	const errorMessage = document.getElementById("errorMessage");
+	const openOptionsButton = document.getElementById("openOptionsButton");
+
+	openOptionsButton?.addEventListener("click", () => {
+		if (chrome.runtime?.openOptionsPage) {
+			chrome.runtime.openOptionsPage();
 		}
 	});
 
-	async function getAllTimings() {
-		try {
-			const result = await chrome.storage.local.get(["timings"]);
-			if (!result.timings) {
-				console.error("No timings found in storage.");
-				return;
-			}
-			const dates = await chrome.storage.local.get([
-				"hijri_day",
-				"hijri_month",
-				"gregorian_day",
-			]);
-			todayTimings = result["timings"];
-			todayDates = dates;
-			const prayerTimesArray = createPrayerTimesArray(todayTimings);
-			todayPrayerTimes = prayerTimesArray.map(prayer => ({
-				name: prayer.name,
-				time: convertTo12HourFormat(prayer.time)
-			}));
-		} catch (error) {
-			console.error("Error getting timings:", error);
+	function showError(message) {
+		if (errorCard) {
+			errorCard.classList.remove("hidden");
+		}
+		if (errorMessage) {
+			errorMessage.textContent = message;
 		}
 	}
 
-	// Initial load
-	getAllTimings().then(() => {
-		if (todayPrayerTimes && todayDates) {
+	function hideError() {
+		if (errorCard) {
+			errorCard.classList.add("hidden");
+		}
+	}
+
+	function clearPrayerDisplay() {
+		document.getElementById("previous-time").textContent = "—";
+		document.getElementById("next-time").textContent = "—";
+		document.getElementById("previousPrayer").textContent = "—";
+		document.getElementById("nextPrayer").textContent = "—";
+		const progressBar = document.querySelector(".progress-bar");
+		if (progressBar) {
+			progressBar.style.width = "0%";
+			progressBar.textContent = "Waiting";
+		}
+	}
+
+	async function loadPopupState() {
+		try {
+			const result = await chrome.storage.local.get([
+				"timings",
+				"hijri_day",
+				"hijri_month",
+				"gregorian_day",
+				"latitude",
+				"longitude",
+				"options",
+			]);
+
+			const latitude = result.latitude;
+			const longitude = result.longitude;
+			const timings = result.timings;
+			const dates = result;
+			const options = result.options || {};
+
+			if (!latitude || !longitude) {
+				showError(
+					"No location configured. Open Options and select your city to display prayer times.",
+				);
+				clearPrayerDisplay();
+				return;
+			}
+
+			if (!timings) {
+				showError(
+					options.city
+						? `Location set to ${options.city}, ${options.country || ""}. Prayer timings are still loading.`
+						: "Prayer timings are still loading. Please refresh from Options.",
+				);
+				clearPrayerDisplay();
+				return;
+			}
+
+			hideError();
+
+			todayTimings = timings;
+			todayDates = dates;
+			const prayerTimesArray = createPrayerTimesArray(todayTimings);
+			todayPrayerTimes = prayerTimesArray.map((prayer) => ({
+				name: prayer.name,
+				time: convertTo12HourFormat(prayer.time),
+			}));
 			updatePrayerTimes(todayPrayerTimes);
 			updateDates(todayDates);
+		} catch (error) {
+			console.error("Error loading popup state:", error);
+			showError("Failed to load prayer data. Please try again.");
+			clearPrayerDisplay();
+		}
+	}
+
+	chrome.storage.onChanged.addListener((changes, namespace) => {
+		if (namespace === "local") {
+			const relevantKeys = [
+				"timings",
+				"hijri_day",
+				"hijri_month",
+				"gregorian_day",
+				"latitude",
+				"longitude",
+				"options",
+			];
+			if (Object.keys(changes).some((key) => relevantKeys.includes(key))) {
+				loadPopupState();
+			}
 		}
 	});
+
+	// Initial load
+	loadPopupState();
 
 	function updatePrayerTimes(prayerTimes) {
 		const { nextPrayer, previousPrayer } = findNextPrayer(prayerTimes);
 
-		document.getElementById(
-			"previous-time"
-		).textContent = `${previousPrayer.time}`;
-		document.getElementById(
-			"previousPrayer"
-		).textContent = `${previousPrayer.name}`;
+		document.getElementById("previous-time").textContent =
+			`${previousPrayer.time}`;
+		document.getElementById("previousPrayer").textContent =
+			`${previousPrayer.name}`;
 		document.getElementById("next-time").textContent = `${nextPrayer.time}`;
 		document.getElementById("nextPrayer").textContent = `${nextPrayer.name}`;
 
@@ -116,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
 			new Date(),
 			parseTimeToDate(nextPrayer.time),
 			parseTimeToDate(previousPrayer.time),
-			progressBar
+			progressBar,
 		);
 	}
 

@@ -6,21 +6,28 @@
 	--border: rgba(15, 23, 42, 0.08);
 	--text: #172033;
 	--muted: #687285;
-	--accent: #8a6d3b;
-	--accent-strong: #6c4f1c;
+	--accent: #d4af37;
+	--accent-strong: #b8941f;
 	--shadow: 0 20px 50px rgba(15, 23, 42, 0.12);
 }
 
 :root[data-theme="dark"] {
-	--bg: linear-gradient(135deg, #0f172a 0%, #111827 40%, #16263d 100%);
-	--panel: rgba(15, 23, 42, 0.72);
-	--panel-strong: rgba(17, 24, 39, 0.9);
+	/* rgba(255, 255, 255, 0.15), */
+	/* rgba(255, 255, 255, 0)) */
+	--bg: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.15) 0%,
+		rgba(255, 255, 255, 0) 100%
+	);
+	/* --bg: linear-gradient(135deg, #0f172a 0%, #111827 40%, #16263d 100%); */
+	--panel: rgba(43, 43, 44, 0.72);
+	--panel-strong: rgba(30, 30, 31, 0.9);
 	--border: rgba(255, 255, 255, 0.1);
 	--text: #f8fafc;
 	--muted: #cbd5e1;
-	--accent: #f3c676;
-	--accent-strong: #ffd48c;
-	--shadow: 0 20px 50px rgba(2, 6, 23, 0.45);
+	--accent: #e6ac48;
+	--accent-strong: #f8b747;
+	--shadow: 0 20px 50px rgba(17, 18, 19, 0.808);
 }
 
 * {
@@ -145,6 +152,8 @@ button {
 	width: 56px;
 	height: 32px;
 	display: inline-flex;
+	border: 1px solid var(--border);
+	border-radius: 999px;
 }
 
 .switch input {
@@ -167,7 +176,7 @@ button {
 	width: 26px;
 	height: 26px;
 	left: 3px;
-	top: 3px;
+	top: 2px;
 	border-radius: 50%;
 	background: white;
 	box-shadow: 0 6px 16px rgba(15, 23, 42, 0.2);
@@ -179,7 +188,7 @@ button {
 }
 
 .switch input:checked + .slider::before {
-	transform: translateX(24px);
+	transform: translateX(22px);
 }
 
 .chip-grid {
@@ -279,6 +288,140 @@ button {
 		box-shadow 0.2s ease;
 }
 
+.search-field input {
+	width: 100%;
+}
+
+.suggestions-card {
+	margin-top: 16px;
+	border: 1px solid var(--border);
+	border-radius: 20px;
+	background: rgba(255, 255, 255, 0.55);
+	padding: 14px;
+}
+
+:root[data-theme="dark"] .suggestions-card {
+	background: rgba(255, 255, 255, 0.08);
+}
+
+.suggestions-info {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 10px;
+	color: var(--muted);
+	font-size: 0.92rem;
+}
+
+.dot-loader {
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: transparent;
+	box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+	opacity: 0;
+	transition: opacity 0.2s ease;
+}
+
+.dot-loader.active {
+	background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+	opacity: 1;
+	animation: pulse 1s ease infinite;
+}
+
+@keyframes pulse {
+	0%,
+	100% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(1.3);
+	}
+}
+
+.suggestions-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	max-height: 240px;
+	overflow-y: auto;
+	border-top: 1px solid var(--border);
+}
+
+.suggestion-item {
+	display: flex;
+	flex-direction: column;
+	padding: 12px 14px;
+	border-radius: 16px;
+	cursor: pointer;
+	transition:
+		background 0.2s ease,
+		transform 0.2s ease;
+}
+
+.suggestion-item:not(:last-child) {
+	margin-bottom: 8px;
+}
+
+.suggestion-item:hover,
+.suggestion-item.active {
+	background: rgba(138, 109, 59, 0.1);
+}
+
+.suggestion-title {
+	font-weight: 700;
+	color: var(--text);
+}
+
+.suggestion-description {
+	font-size: 0.92rem;
+	color: var(--muted);
+	margin-top: 4px;
+}
+
+.location-summary {
+	margin-top: 18px;
+	padding: 16px;
+	border-radius: 18px;
+	background: rgba(255, 255, 255, 0.72);
+	border: 1px solid var(--accent-strong);
+}
+
+:root[data-theme="dark"] .location-summary {
+	background: rgba(255, 255, 255, 0.06);
+}
+
+.location-label {
+	margin: 0 0 6px;
+	text-transform: uppercase;
+	letter-spacing: 0.16em;
+	font-size: 0.7rem;
+	color: var(--accent);
+}
+
+.location-name {
+	margin: 0;
+	font-weight: 700;
+}
+
+.location-meta {
+	margin: 4px 0 0;
+	color: var(--muted);
+	font-size: 0.95rem;
+}
+
+@media (max-width: 640px) {
+	.suggestions-card,
+	.location-summary {
+		padding: 12px;
+	}
+
+	.suggestion-item {
+		padding: 10px 12px;
+	}
+}
+
 :root[data-theme="dark"] .field input,
 :root[data-theme="dark"] .field select {
 	background: rgba(255, 255, 255, 0.06);
@@ -294,6 +437,7 @@ button {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 10px;
+    margin-top: 14px;
 }
 
 .preview-card {
@@ -342,7 +486,7 @@ button {
 }
 
 :root[data-theme="dark"] .preview-notification {
-	background: rgba(15, 23, 42, 0.7);
+	background: rgba(24, 24, 26, 0.7);
 }
 
 .preview-icon {
@@ -383,7 +527,7 @@ button {
 
 .preview-prayer {
 	color: var(--text);
-	font-weight: 700;
+	font-weight: 900;
 }
 
 .status-pill {

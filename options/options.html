@@ -69,31 +69,35 @@
                     <div class="panel-header">
                         <div>
                             <p class="eyebrow">Location</p>
-                            <h2>Prayer timing source</h2>
+                            <h2>Search your city</h2>
                         </div>
                     </div>
 
                     <div class="panel-body">
-                        <div class="segmented-control" role="tablist" aria-label="Location mode">
-                            <button class="segment-btn active" type="button" data-location-mode="auto">Auto
-                                detect</button>
-                            <button class="segment-btn" type="button" data-location-mode="manual">Manual</button>
+                        <label class="field search-field">
+                            <span>Search city or country</span>
+                            <input type="search" id="locationSearchInput" placeholder="Type a city, region, or country"
+                                autocomplete="off" />
+                        </label>
+
+                        <div class="suggestions-card">
+                            <div class="suggestions-info">
+                                <span id="locationStatus">Search for a location to save coordinates
+                                    automatically.</span>
+                                <span class="dot-loader" id="locationLoader" aria-hidden="true"></span>
+                            </div>
+                            <ul class="suggestions-list" id="locationSuggestions" role="listbox"></ul>
                         </div>
 
-                        <div class="field-grid">
-                            <label class="field">
-                                <span>Latitude</span>
-                                <input type="text" id="latitudeInput" placeholder="24.7136" />
-                            </label>
-                            <label class="field">
-                                <span>Longitude</span>
-                                <input type="text" id="longitudeInput" placeholder="46.6753" />
-                            </label>
+                        <div class="location-summary" id="locationSummary" hidden>
+                            <p class="location-label">Selected location</p>
+                            <p class="location-name" id="locationName"></p>
+                            <p class="location-meta" id="locationMeta"></p>
                         </div>
 
                         <div class="button-row">
-                            <button class="secondary-btn" type="button" id="detectButton">Use current location</button>
-                            <button class="primary-btn" type="button" id="saveLocationButton">Save location</button>
+                            <button class="secondary-btn" type="button" id="clearLocationButton">Clear
+                                selection</button>
                         </div>
                     </div>
                 </article>

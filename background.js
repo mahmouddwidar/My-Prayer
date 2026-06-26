@@ -177,6 +177,18 @@ function checkAndUpdateTimings() {
 	});
 }
 
+chrome.storage.onChanged.addListener((changes, area) => {
+	if (area === "local" && (changes.latitude || changes.longitude)) {
+		console.log("Location changed, refreshing prayer timings.");
+		updateTimings(getCurrentDateString()).catch((error) => {
+			console.error(
+				"Failed to refresh prayer timings after location change:",
+				error,
+			);
+		});
+	}
+});
+
 async function setNotificationMode(notificationMode) {
 	try {
 		if (notificationMode) {
