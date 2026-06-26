@@ -7,7 +7,7 @@ import {
 	scheduleDailyAlarm,
 	getCurrentDateString,
 	getNextMidnight,
-	handleError
+	handleError,
 } from "./utils/common.js";
 
 // Welcome page constants
@@ -55,6 +55,19 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 	}
 });
 
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+	if (message?.type === "refreshPrayerTimes") {
+		updateTimings(getCurrentDateString())
+			.then(() => sendResponse({ ok: true }))
+			.catch((error) => {
+				console.error("Refresh failed:", error);
+				sendResponse({ ok: false, error: error.message });
+			});
+		return true;
+	}
+	return false;
+});
+
 chrome.alarms.onAlarm.addListener(async (alarm) => {
 	if (alarm.name === "dailyPrayerUpdate") {
 		console.log("Daily prayer time update triggered.");
@@ -89,8 +102,14 @@ async function updateTimings(currentDate) {
 		}
 
 		if (notificationEnabled) {
-			const prayers = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
-			prayers.forEach((prayer) => {
+			const selectedPrayers = result.options?.selectedPrayers || [
+				"Fajr",
+				"Dhuhr",
+				"Asr",
+				"Maghrib",
+				"Isha",
+			];
+			selectedPrayers.forEach((prayer) => {
 				if (prayerTimes[prayer]) {
 					const [hours, minutes] = prayerTimes[prayer].split(":").map(Number);
 					const prayerTime = new Date();
@@ -100,7 +119,7 @@ async function updateTimings(currentDate) {
 						schedulePrayerAlarm(prayer, prayerTime.getTime());
 					} else {
 						console.warn(
-							`Skipping past prayer time for ${prayer}: ${prayerTime}`
+							`Skipping past prayer time for ${prayer}: ${prayerTime}`,
 						);
 					}
 				} else {
@@ -128,7 +147,7 @@ function fetchPrayerTimes(currentDate) {
 						return fetchTimes(
 							result.latitude,
 							result.longitude,
-							getMethodByCountry(countryCode)
+							getMethodByCountry(countryCode),
 						);
 					})
 					.then(() => {
@@ -178,7 +197,15 @@ async function setNotificationMode(notificationMode) {
 			}
 
 			// Set up prayer alarms
-			const prayers = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
+			const prayers = result.timings
+				? result.options?.selectedPrayers || [
+						"Fajr",
+						"Dhuhr",
+						"Asr",
+						"Maghrib",
+						"Isha",
+					]
+				: ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
 			let alarmsSet = 0;
 
 			prayers.forEach((prayer) => {
@@ -193,11 +220,11 @@ async function setNotificationMode(notificationMode) {
 						schedulePrayerAlarm(prayer, prayerTime.getTime());
 						alarmsSet++;
 						console.log(
-							`✅ Alarm set for ${prayer} at ${prayerTime.toLocaleTimeString()}`
+							`✅ Alarm set for ${prayer} at ${prayerTime.toLocaleTimeString()}`,
 						);
 					} else {
 						console.warn(
-							`⚠️ Skipping past prayer time for ${prayer}: ${prayerTime.toLocaleTimeString()}`
+							`⚠️ Skipping past prayer time for ${prayer}: ${prayerTime.toLocaleTimeString()}`,
 						);
 					}
 				}
@@ -218,12 +245,13 @@ async function setNotificationMode(notificationMode) {
 			// Filter out only prayer alarms (excluding the daily update alarm)
 			const prayerAlarms = allAlarms.filter(
 				(alarm) =>
-					alarm.name.startsWith("prayer-") && alarm.name !== "dailyPrayerUpdate"
+					alarm.name.startsWith("prayer-") &&
+					alarm.name !== "dailyPrayerUpdate",
 			);
 
 			console.log(
 				"🗑️ Clearing prayer alarms:",
-				prayerAlarms.map((p) => p.name)
+				prayerAlarms.map((p) => p.name),
 			);
 			console.log("📅 Preserving daily update alarm");
 

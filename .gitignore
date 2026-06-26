@@ -1,2 +1,5 @@
 notes.txt
 versions-arch/
+.wxt
+.output
+node_modules/
