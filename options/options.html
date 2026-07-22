@@ -40,27 +40,32 @@
 
                     <div class="panel-body">
                         <p class="panel-copy">Choose which prayers trigger reminders and how they feel.</p>
-                        <div class="chip-grid">
-                            <label class="chip-pill">
-                                <input type="checkbox" name="prayerOption" value="Fajr" checked />
+                        <div class="chip-grid" role="group" aria-label="Prayer reminders">
+                            <button type="button" class="chip-pill is-active" data-prayer-option="Fajr"
+                                aria-pressed="true">
+                                <span class="chip-check" aria-hidden="true">✓</span>
                                 <span>Fajr</span>
-                            </label>
-                            <label class="chip-pill">
-                                <input type="checkbox" name="prayerOption" value="Dhuhr" checked />
+                            </button>
+                            <button type="button" class="chip-pill is-active" data-prayer-option="Dhuhr"
+                                aria-pressed="true">
+                                <span class="chip-check" aria-hidden="true">✓</span>
                                 <span>Dhuhr</span>
-                            </label>
-                            <label class="chip-pill">
-                                <input type="checkbox" name="prayerOption" value="Asr" checked />
+                            </button>
+                            <button type="button" class="chip-pill is-active" data-prayer-option="Asr"
+                                aria-pressed="true">
+                                <span class="chip-check" aria-hidden="true">✓</span>
                                 <span>Asr</span>
-                            </label>
-                            <label class="chip-pill">
-                                <input type="checkbox" name="prayerOption" value="Maghrib" checked />
+                            </button>
+                            <button type="button" class="chip-pill is-active" data-prayer-option="Maghrib"
+                                aria-pressed="true">
+                                <span class="chip-check" aria-hidden="true">✓</span>
                                 <span>Maghrib</span>
-                            </label>
-                            <label class="chip-pill">
-                                <input type="checkbox" name="prayerOption" value="Isha" checked />
+                            </button>
+                            <button type="button" class="chip-pill is-active" data-prayer-option="Isha"
+                                aria-pressed="true">
+                                <span class="chip-check" aria-hidden="true">✓</span>
                                 <span>Isha</span>
-                            </label>
+                            </button>
                         </div>
                     </div>
                 </article>
@@ -70,6 +75,11 @@
                         <div>
                             <p class="eyebrow">Location</p>
                             <h2>Search your city</h2>
+                        </div>
+
+                        <div class="location-pill" id="locationStatusPill" role="status">
+                            <span class="location-pill-dot" aria-hidden="true"></span>
+                            <span id="locationStatusText">No current location</span>
                         </div>
                     </div>
 
@@ -104,7 +114,7 @@
             </div>
 
             <div class="panel-stack">
-                <article class="panel-card">
+                <article class="panel-card sound-panel">
                     <div class="panel-header">
                         <div>
                             <p class="eyebrow">Appearance</p>
@@ -130,7 +140,7 @@
                     </div>
                 </article>
 
-                <article class="panel-card preview-card">
+                <!-- <article class="panel-card preview-card">
                     <div class="panel-header">
                         <div>
                             <p class="eyebrow">Preview</p>
@@ -155,7 +165,7 @@
                             <span class="preview-meta">Smooth • Calm • Minimal</span>
                         </div>
                     </div>
-                </article>
+                </article> -->
             </div>
         </section>
 

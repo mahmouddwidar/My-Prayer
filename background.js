@@ -102,6 +102,7 @@ async function updateTimings(currentDate) {
 		}
 
 		if (notificationEnabled) {
+			await clearPrayerAlarms();
 			const selectedPrayers = result.options?.selectedPrayers || [
 				"Fajr",
 				"Dhuhr",
@@ -126,6 +127,8 @@ async function updateTimings(currentDate) {
 					console.warn(`Prayer time not available for ${prayer}`);
 				}
 			});
+		} else {
+			await clearPrayerAlarms();
 		}
 
 		console.log("Prayer times updated. Notifications:", notificationEnabled);
@@ -137,6 +140,18 @@ async function updateTimings(currentDate) {
 // schedulePrayerAlarm function moved to utils/common.js
 
 // showPrayerNotification function moved to utils/common.js
+
+async function clearPrayerAlarms() {
+	const allAlarms = await chrome.alarms.getAll();
+	const prayerAlarms = allAlarms.filter(
+		(alarm) =>
+			alarm.name.startsWith("prayer-") && alarm.name !== "dailyPrayerUpdate",
+	);
+
+	await Promise.all(
+		prayerAlarms.map((alarm) => chrome.alarms.clear(alarm.name)),
+	);
+}
 
 function fetchPrayerTimes(currentDate) {
 	return new Promise((resolve, reject) => {
@@ -178,11 +193,31 @@ function checkAndUpdateTimings() {
 }
 
 chrome.storage.onChanged.addListener((changes, area) => {
-	if (area === "local" && (changes.latitude || changes.longitude)) {
+	if (area !== "local") return;
+
+	const previousOptions = changes.options?.oldValue || {};
+	const nextOptions = changes.options?.newValue || {};
+	const prayerSelectionChanged =
+		JSON.stringify(previousOptions.selectedPrayers) !==
+		JSON.stringify(nextOptions.selectedPrayers);
+	const notificationChanged =
+		previousOptions.notification !== nextOptions.notification;
+
+	if (changes.latitude || changes.longitude) {
 		console.log("Location changed, refreshing prayer timings.");
 		updateTimings(getCurrentDateString()).catch((error) => {
 			console.error(
 				"Failed to refresh prayer timings after location change:",
+				error,
+			);
+		});
+	}
+
+	if (changes.options && (prayerSelectionChanged || notificationChanged)) {
+		console.log("Reminder selection changed, refreshing prayer alarms.");
+		updateTimings(getCurrentDateString()).catch((error) => {
+			console.error(
+				"Failed to refresh prayer timings after reminder change:",
 				error,
 			);
 		});

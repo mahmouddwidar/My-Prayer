@@ -64,15 +64,15 @@ async function writePersistentSettings(data) {
 
 const elements = {
 	notificationToggle: document.getElementById("notificationToggle"),
-	prayerOptions: Array.from(
-		document.querySelectorAll('input[name="prayerOption"]'),
-	),
+	prayerOptions: Array.from(document.querySelectorAll("[data-prayer-option]")),
 	soundSelect: document.getElementById("soundSelect"),
 	themeButtons: Array.from(document.querySelectorAll("[data-theme-option]")),
 	locationSearchInput: document.getElementById("locationSearchInput"),
 	locationSuggestions: document.getElementById("locationSuggestions"),
 	locationStatus: document.getElementById("locationStatus"),
 	locationLoader: document.getElementById("locationLoader"),
+	locationStatusPill: document.getElementById("locationStatusPill"),
+	locationStatusText: document.getElementById("locationStatusText"),
 	locationSummary: document.getElementById("locationSummary"),
 	locationName: document.getElementById("locationName"),
 	locationMeta: document.getElementById("locationMeta"),
@@ -94,19 +94,27 @@ function bindEvents() {
 	elements.notificationToggle?.addEventListener("change", (event) => {
 		currentOptions.notification = event.target.checked;
 		saveSettings({ notification: currentOptions.notification });
+		triggerLocationRefresh();
 	});
 
-	elements.prayerOptions.forEach((checkbox) => {
-		checkbox.addEventListener("change", () => {
-			currentOptions.selectedPrayers = elements.prayerOptions
-				.filter((input) => input.checked)
-				.map((input) => input.value);
-			if (currentOptions.selectedPrayers.length === 0) {
-				currentOptions.selectedPrayers = ["Fajr"];
-				elements.prayerOptions.find((input) => input.value === "Fajr").checked =
-					true;
+	elements.prayerOptions.forEach((button) => {
+		button.addEventListener("click", () => {
+			const prayerName = button.dataset.prayerOption;
+			const selectedSet = new Set(currentOptions.selectedPrayers);
+
+			if (selectedSet.has(prayerName)) {
+				if (selectedSet.size === 1) {
+					return;
+				}
+				selectedSet.delete(prayerName);
+			} else {
+				selectedSet.add(prayerName);
 			}
+
+			currentOptions.selectedPrayers = Array.from(selectedSet);
+			updatePrayerButtons();
 			saveSettings({ selectedPrayers: currentOptions.selectedPrayers });
+			triggerLocationRefresh();
 		});
 	});
 
@@ -141,6 +149,7 @@ async function loadSettings() {
 	try {
 		const result = await readPersistentSettings();
 		const savedOptions = result.options || {};
+		// console.log("Loaded saved options:", savedOptions);
 
 		currentOptions = {
 			...DEFAULT_OPTIONS,
@@ -166,9 +175,7 @@ async function loadSettings() {
 function populateForm() {
 	elements.notificationToggle.checked = Boolean(currentOptions.notification);
 
-	elements.prayerOptions.forEach((checkbox) => {
-		checkbox.checked = currentOptions.selectedPrayers.includes(checkbox.value);
-	});
+	updatePrayerButtons();
 
 	elements.soundSelect.value = currentOptions.sound || "soft";
 	elements.locationSearchInput.value = currentOptions.city
@@ -176,6 +183,15 @@ function populateForm() {
 		: "";
 	updateThemeButtons();
 	renderLocationSummary();
+}
+
+function updatePrayerButtons() {
+	elements.prayerOptions.forEach((button) => {
+		const prayerName = button.dataset.prayerOption;
+		const isSelected = currentOptions.selectedPrayers.includes(prayerName);
+		button.classList.toggle("is-active", isSelected);
+		button.setAttribute("aria-pressed", String(isSelected));
+	});
 }
 
 function updateThemeButtons() {
@@ -382,6 +398,32 @@ function handleSuggestionClick(event) {
 	triggerLocationRefresh();
 }
 
+function updateLocationStatusPill() {
+	if (!elements.locationStatusPill || !elements.locationStatusText) return;
+
+	const hasLocation = Boolean(
+		currentOptions.city ||
+		currentOptions.country ||
+		currentOptions.latitude ||
+		currentOptions.longitude,
+	);
+
+	if (hasLocation) {
+		const locationLabel = [currentOptions.city, currentOptions.country]
+			.filter(Boolean)
+			.join(", ");
+		elements.locationStatusText.textContent = locationLabel
+			? `Current: ${locationLabel}`
+			: "Current location saved";
+		elements.locationStatusPill.classList.remove("is-empty");
+		elements.locationStatusPill.classList.add("is-set");
+	} else {
+		elements.locationStatusText.textContent = "No current location";
+		elements.locationStatusPill.classList.remove("is-set");
+		elements.locationStatusPill.classList.add("is-empty");
+	}
+}
+
 function renderLocationSummary() {
 	if (!elements.locationSummary) return;
 
@@ -394,6 +436,8 @@ function renderLocationSummary() {
 	} else {
 		elements.locationSummary.hidden = true;
 	}
+
+	updateLocationStatusPill();
 }
 
 function clearLocationSelection() {
@@ -446,25 +490,6 @@ function triggerLocationRefresh() {
 				console.error("Failed to request prayer refresh:", error);
 			});
 	}
-}
-
-function updatePreview() {
-	const prayerList = currentOptions.selectedPrayers?.length
-		? currentOptions.selectedPrayers
-		: DEFAULT_OPTIONS.selectedPrayers;
-	const featuredPrayer = prayerList[0] || "Fajr";
-
-	elements.previewTitle.textContent = currentOptions.notification
-		? "Prayer reminder"
-		: "Silent mode";
-	elements.previewMessage.textContent = currentOptions.notification
-		? `You'll get a gentle reminder for ${featuredPrayer}${prayerList.length > 1 ? ` and ${prayerList.length - 1} more` : ""}.`
-		: "Notifications are paused for now.";
-
-	elements.previewPrayer.textContent = featuredPrayer;
-	elements.previewTime.textContent = currentOptions.notification
-		? "3:30 PM"
-		: "—";
 }
 
 document.addEventListener("DOMContentLoaded", init);

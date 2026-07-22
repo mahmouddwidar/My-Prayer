@@ -181,7 +181,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	checkbox.addEventListener("change", async (e) => {
 		const newValue = e.target.checked;
-		await chrome.storage.local.set({ options: { notification: newValue } });
+		const result = await chrome.storage.local.get("options");
+		const existingOptions = result.options || {};
+
+		await chrome.storage.local.set({
+			options: {
+				...existingOptions,
+				notification: newValue,
+			},
+		});
 	});
 
 	setInterval(() => {
