@@ -281,6 +281,7 @@ async function handleLocationSearchInput(event) {
 			console.error("Location search failed", error);
 			showLocationLoader(false);
 			showLocationStatus("Unable to fetch locations.", true);
+			
 		}
 	}, LOCATION_SEARCH_DELAY);
 }
