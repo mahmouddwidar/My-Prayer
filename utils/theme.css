@@ -106,6 +106,12 @@
 	--options-dark-preview-background: rgba(24, 24, 26, 0.7);
 	--options-dark-panel-background: rgba(255, 255, 255, 0.08);
 	--options-status-background: rgba(255, 255, 255, 0.6);
+	--options-selected-bg: linear-gradient(
+		135deg,
+		var(--options-accent),
+		var(--options-accent-strong)
+	);
+	--options-selected-border: 1px solid var(--options-transparent);
 
 	/* Sidebar colors and shadows */
 	--sidebar-gold: #d4af37;
@@ -180,4 +186,58 @@
 	--popup-button-gradient: linear-gradient(180deg, #ffd666, #ffc107);
 	--popup-button-shadow: 0 6px 16px rgba(15, 23, 42, 0.12);
 	--popup-button-hover-shadow: 0 8px 18px rgba(15, 23, 42, 0.16);
+}
+
+[data-theme="dark"] {
+	--sidebar-gold: #d4af37;
+	--sidebar-gold-light: color-mix(
+		in srgb,
+		var(--options-dark-accent) 18%,
+		transparent
+	);
+	--sidebar-gold-dark: #b8941f;
+	--sidebar-teal: #4db97e;
+	--sidebar-teal-light: var(--options-dark-surface);
+	--sidebar-text: var(--options-dark-text);
+	--sidebar-text-secondary: var(--options-dark-muted);
+	--sidebar-text-muted: var(--options-dark-muted);
+	--sidebar-text-light: #ffffff;
+	--sidebar-background: var(--options-dark-panel);
+	--sidebar-card: var(--options-dark-panel-strong);
+	--sidebar-section: var(--options-dark-panel);
+	--sidebar-hover: color-mix(
+		in srgb,
+		var(--options-dark-accent) 18%,
+		transparent
+	);
+	--sidebar-border: var(--options-dark-border);
+	--sidebar-card-border: var(--options-dark-border);
+	--sidebar-transparent: transparent;
+	--sidebar-shadow-sm: var(--options-dark-shadow);
+	--sidebar-shadow-md: var(--options-dark-shadow);
+	--sidebar-shadow-lg: var(--options-dark-shadow);
+	--sidebar-background-alt: var(--options-dark-panel-strong);
+	--sidebar-header-text: rgba(255, 255, 255, 0.9);
+	--sidebar-header-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
+	--sidebar-section-background: var(--options-dark-panel);
+	--sidebar-section-hover-background: var(--options-dark-panel-strong);
+	--sidebar-teal-hover: color-mix(
+		in srgb,
+		var(--options-dark-accent) 18%,
+		transparent
+	);
+	--sidebar-azkar-fadl: #43c7a3;
+	--sidebar-counter-background: color-mix(
+		in srgb,
+		var(--options-dark-accent) 18%,
+		transparent
+	);
+	--sidebar-disabled-gradient: linear-gradient(
+		135deg,
+		var(--options-dark-surface) 0%,
+		var(--options-dark-panel) 100%
+	);
+	--sidebar-disabled-border: var(--options-dark-border);
+	--options-selected-bg: rgba(230, 172, 72, 0.18);
+	--options-selected-border: 1.5px solid #f8b747;
 }

@@ -230,10 +230,15 @@ button {
 }
 
 .chip-pill.is-active {
-	background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+	background: var(--options-selected-bg);
 	color: var(--options-white);
-	border-color: var(--options-transparent);
+	border: var(--options-selected-border);
 	box-shadow: var(--options-accent-shadow);
+}
+
+:root[data-theme="dark"] .chip-pill.is-active {
+	background: var(--options-selected-bg);
+	border: var(--options-selected-border);
 }
 
 .chip-check {
