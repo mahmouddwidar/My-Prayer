@@ -232,7 +232,8 @@ async function setNotificationMode(notificationMode) {
 			// Wait a moment to ensure storage is updated
 			await new Promise((resolve) => setTimeout(resolve, 500));
 
-			const result = await chrome.storage.local.get("timings");
+			const result = await chrome.storage.local.get(["timings", "options"]);
+			console.log("Stored notification settings:", result.options);
 			if (!result.timings) {
 				console.log("⏳ Waiting for prayer times to be available...");
 				await new Promise((resolve) => setTimeout(resolve, 5000));
@@ -253,6 +254,7 @@ async function setNotificationMode(notificationMode) {
 						"Isha",
 					]
 				: ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
+			console.log("Prayers scheduled:", prayers);
 			let alarmsSet = 0;
 
 			prayers.forEach((prayer) => {
