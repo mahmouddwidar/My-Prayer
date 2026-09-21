@@ -7,7 +7,6 @@ const DEFAULT_OPTIONS = {
 	country: "",
 	timezone: "",
 	theme: "system",
-	sound: "soft",
 };
 
 const NOMINATIM_BASE = "https://nominatim.openstreetmap.org/search";
@@ -65,7 +64,6 @@ async function writePersistentSettings(data) {
 const elements = {
 	notificationToggle: document.getElementById("notificationToggle"),
 	prayerOptions: Array.from(document.querySelectorAll("[data-prayer-option]")),
-	soundSelect: document.getElementById("soundSelect"),
 	themeButtons: Array.from(document.querySelectorAll("[data-theme-option]")),
 	locationSearchInput: document.getElementById("locationSearchInput"),
 	locationSuggestions: document.getElementById("locationSuggestions"),
@@ -116,10 +114,6 @@ function bindEvents() {
 			saveSettings({ selectedPrayers: currentOptions.selectedPrayers });
 			triggerLocationRefresh();
 		});
-	});
-
-	elements.soundSelect?.addEventListener("change", (event) => {
-		saveSettings({ sound: event.target.value });
 	});
 
 	elements.themeButtons.forEach((button) => {
@@ -177,7 +171,6 @@ function populateForm() {
 
 	updatePrayerButtons();
 
-	elements.soundSelect.value = currentOptions.sound || "soft";
 	elements.locationSearchInput.value = currentOptions.city
 		? `${currentOptions.city}, ${currentOptions.country || ""}`
 		: "";

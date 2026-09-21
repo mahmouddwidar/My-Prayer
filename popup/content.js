@@ -29,6 +29,13 @@ document.addEventListener("DOMContentLoaded", () => {
 	const errorCard = document.getElementById("errorCard");
 	const errorMessage = document.getElementById("errorMessage");
 	const openOptionsButton = document.getElementById("openOptionsButton");
+	const openOptions = document.getElementById("openOptions");
+
+	openOptions?.addEventListener("click", () => {
+		if (chrome.runtime?.openOptionsPage) {
+			chrome.runtime.openOptionsPage();
+		}
+	});
 
 	openOptionsButton?.addEventListener("click", () => {
 		if (chrome.runtime?.openOptionsPage) {
@@ -163,34 +170,6 @@ document.addEventListener("DOMContentLoaded", () => {
 	}
 
 	// parseTimeToDate, convertTo12HourFormat, and updateProgressBar functions moved to utils/common.js
-
-	// Notification Button
-	const checkbox = document.getElementById("notification");
-
-	// Load and apply the saved notification setting
-	chrome.storage.local.get("options", (result) => {
-		let options = result.options || {};
-
-		if (options.notification === undefined) {
-			options.notification = false;
-			chrome.storage.local.set({ options });
-		}
-
-		checkbox.checked = options.notification;
-	});
-
-	checkbox.addEventListener("change", async (e) => {
-		const newValue = e.target.checked;
-		const result = await chrome.storage.local.get("options");
-		const existingOptions = result.options || {};
-
-		await chrome.storage.local.set({
-			options: {
-				...existingOptions,
-				notification: newValue,
-			},
-		});
-	});
 
 	setInterval(() => {
 		if (todayPrayerTimes && todayDates) {
