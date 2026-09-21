@@ -1,33 +1,31 @@
+@import url("../../utils/theme.css");
+
 :root {
 	color-scheme: light dark;
-	--bg: linear-gradient(135deg, #f7f1e6 0%, #fefcf8 45%, #ecf4ff 100%);
-	--panel: rgba(255, 255, 255, 0.74);
-	--panel-strong: rgba(255, 255, 255, 0.9);
-	--border: rgba(15, 23, 42, 0.08);
-	--text: #172033;
-	--muted: #687285;
-	--accent: #d4af37;
-	--accent-strong: #b8941f;
-	--shadow: 0 20px 50px rgba(15, 23, 42, 0.12);
+	--bg: var(--options-bg);
+	--panel: var(--options-panel);
+	--panel-strong: var(--options-panel-strong);
+	--border: var(--options-border);
+	--text: var(--options-text);
+	--muted: var(--options-muted);
+	--accent: var(--options-accent);
+	--accent-strong: var(--options-accent-strong);
+	--shadow: var(--options-shadow);
 }
 
 :root[data-theme="dark"] {
 	/* rgba(255, 255, 255, 0.15), */
 	/* rgba(255, 255, 255, 0)) */
-	--bg: linear-gradient(
-		135deg,
-		rgba(255, 255, 255, 0.15) 0%,
-		rgba(255, 255, 255, 0) 100%
-	);
+	--bg: var(--options-dark-bg);
 	/* --bg: linear-gradient(135deg, #0f172a 0%, #111827 40%, #16263d 100%); */
-	--panel: rgba(43, 43, 44, 0.72);
-	--panel-strong: rgba(30, 30, 31, 0.9);
-	--border: rgba(255, 255, 255, 0.1);
-	--text: #f8fafc;
-	--muted: #cbd5e1;
-	--accent: #e6ac48;
-	--accent-strong: #f8b747;
-	--shadow: 0 20px 50px rgba(17, 18, 19, 0.808);
+	--panel: var(--options-dark-panel);
+	--panel-strong: var(--options-dark-panel-strong);
+	--border: var(--options-dark-border);
+	--text: var(--options-dark-text);
+	--muted: var(--options-dark-muted);
+	--accent: var(--options-dark-accent);
+	--accent-strong: var(--options-dark-accent-strong);
+	--shadow: var(--options-dark-shadow);
 }
 
 * {
@@ -114,8 +112,8 @@ button {
 	width: 10px;
 	height: 10px;
 	border-radius: 50%;
-	background: linear-gradient(135deg, #7ebf7a, #4caf50);
-	box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.16);
+	background: var(--options-status-gradient);
+	box-shadow: var(--options-status-shadow);
 }
 
 .settings-grid {
@@ -167,7 +165,7 @@ button {
 .slider {
 	position: absolute;
 	inset: 0;
-	background: rgba(15, 23, 42, 0.18);
+	background: var(--options-switch-background);
 	border-radius: 999px;
 	transition: 0.25s ease;
 }
@@ -180,8 +178,8 @@ button {
 	left: 3px;
 	top: 2px;
 	border-radius: 50%;
-	background: white;
-	box-shadow: 0 6px 16px rgba(15, 23, 42, 0.2);
+	background: var(--options-white);
+	box-shadow: var(--options-switch-shadow);
 	transition: 0.25s ease;
 }
 
@@ -209,7 +207,7 @@ button {
 	border: 1px solid var(--border);
 	background: var(--panel-strong);
 	color: var(--text);
-	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+	box-shadow: var(--options-inset-light);
 	transition:
 		transform 0.2s ease,
 		box-shadow 0.2s ease,
@@ -218,8 +216,8 @@ button {
 }
 
 :root[data-theme="dark"] .chip-pill {
-	background: rgba(255, 255, 255, 0.08);
-	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+	background: var(--options-dark-panel-background);
+	box-shadow: var(--options-inset-dark);
 }
 
 .chip-pill:hover {
@@ -228,14 +226,14 @@ button {
 
 .chip-pill:focus-visible {
 	outline: none;
-	box-shadow: 0 0 0 3px rgba(138, 109, 59, 0.22);
+	box-shadow: 0 0 0 3px var(--options-focus);
 }
 
 .chip-pill.is-active {
 	background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-	color: white;
-	border-color: transparent;
-	box-shadow: 0 10px 20px rgba(138, 109, 59, 0.2);
+	color: var(--options-white);
+	border-color: var(--options-transparent);
+	box-shadow: var(--options-accent-shadow);
 }
 
 .chip-check {
@@ -246,8 +244,8 @@ button {
 	border-radius: 999px;
 	font-size: 0.72rem;
 	font-weight: 700;
-	background: rgba(255, 255, 255, 0.76);
-	color: transparent;
+	background: var(--options-preview-background);
+	color: var(--options-transparent);
 	transition: color 0.2s ease;
 }
 
@@ -281,8 +279,8 @@ button {
 .theme-chip.active,
 .primary-btn {
 	background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-	color: white;
-	box-shadow: 0 10px 20px rgba(138, 109, 59, 0.2);
+	color: var(--options-white);
+	box-shadow: var(--options-accent-shadow);
 }
 
 .segment-btn:hover,
@@ -311,7 +309,7 @@ button {
 	border: 1px solid var(--border);
 	border-radius: 14px;
 	padding: 11px 12px;
-	background: rgba(255, 255, 255, 0.62);
+	background: var(--options-field-background);
 	color: var(--text);
 	outline: none;
 	transition:
@@ -330,17 +328,17 @@ button {
 	margin-top: 12px;
 	padding: 8px 12px;
 	border-radius: 999px;
-	background: rgba(138, 109, 59, 0.12);
+	background: var(--options-location-background);
 	color: var(--accent-strong);
 	font-size: 0.92rem;
 	font-weight: 700;
-	border: 1px solid rgba(138, 109, 59, 0.18);
+	border: 1px solid var(--options-location-border);
 }
 
 .location-pill.is-empty {
-	background: rgba(104, 114, 133, 0.12);
+	background: var(--options-empty-background);
 	color: var(--muted);
-	border-color: rgba(104, 114, 133, 0.18);
+	border-color: var(--options-empty-border);
 }
 
 .location-pill-dot {
@@ -348,23 +346,23 @@ button {
 	height: 8px;
 	border-radius: 999px;
 	background: currentColor;
-	box-shadow: 0 0 0 4px rgba(138, 109, 59, 0.14);
+	box-shadow: var(--options-location-shadow);
 }
 
 .location-pill.is-empty .location-pill-dot {
-	box-shadow: 0 0 0 4px rgba(104, 114, 133, 0.12);
+	box-shadow: var(--options-empty-shadow);
 }
 
 .suggestions-card {
 	margin-top: 16px;
 	border: 1px solid var(--border);
 	border-radius: 20px;
-	background: rgba(255, 255, 255, 0.55);
+	background: var(--options-suggestions-background);
 	padding: 14px;
 }
 
 :root[data-theme="dark"] .suggestions-card {
-	background: rgba(255, 255, 255, 0.08);
+	background: var(--options-dark-surface-strong);
 }
 
 .suggestions-info {
@@ -381,8 +379,8 @@ button {
 	width: 10px;
 	height: 10px;
 	border-radius: 50%;
-	background: transparent;
-	box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+	background: var(--options-loader-background);
+	box-shadow: var(--options-loader-shadow);
 	opacity: 0;
 	transition: opacity 0.2s ease;
 }
@@ -429,7 +427,7 @@ button {
 
 .suggestion-item:hover,
 .suggestion-item.active {
-	background: rgba(138, 109, 59, 0.1);
+	background: var(--options-hover-background);
 }
 
 .suggestion-title {
@@ -447,12 +445,12 @@ button {
 	margin-top: 18px;
 	padding: 16px;
 	border-radius: 18px;
-	background: rgba(255, 255, 255, 0.72);
+	background: var(--options-summary-background);
 	border: 1px solid var(--accent-strong);
 }
 
 :root[data-theme="dark"] .location-summary {
-	background: rgba(255, 255, 255, 0.06);
+	background: var(--options-dark-surface);
 }
 
 .location-label {
@@ -487,13 +485,13 @@ button {
 
 :root[data-theme="dark"] .field input,
 :root[data-theme="dark"] .field select {
-	background: rgba(255, 255, 255, 0.06);
+	background: var(--options-dark-surface);
 }
 
 .field input:focus,
 .field select:focus {
 	border-color: var(--accent);
-	box-shadow: 0 0 0 3px rgba(138, 109, 59, 0.16);
+	box-shadow: 0 0 0 3px var(--options-focus);
 }
 
 .button-row {
@@ -510,27 +508,19 @@ button {
 .preview-shell {
 	border-radius: 20px;
 	padding: 16px;
-	background: linear-gradient(
-		135deg,
-		rgba(255, 255, 255, 0.6),
-		rgba(255, 255, 255, 0.25)
-	);
+	background: var(--options-preview-gradient);
 	border: 1px solid var(--border);
 }
 
 :root[data-theme="dark"] .preview-shell {
-	background: linear-gradient(
-		135deg,
-		rgba(255, 255, 255, 0.08),
-		rgba(255, 255, 255, 0.02)
-	);
+	background: var(--options-dark-preview-gradient);
 }
 
 .preview-pill {
 	display: inline-flex;
 	padding: 6px 10px;
 	border-radius: 999px;
-	background: rgba(138, 109, 59, 0.14);
+	background: var(--options-location-background);
 	color: var(--accent-strong);
 	font-size: 0.82rem;
 	font-weight: 700;
@@ -544,12 +534,12 @@ button {
 	gap: 12px;
 	padding: 14px;
 	border-radius: 18px;
-	background: rgba(255, 255, 255, 0.76);
-	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+	background: var(--options-preview-background);
+	box-shadow: var(--options-preview-shadow);
 }
 
 :root[data-theme="dark"] .preview-notification {
-	background: rgba(24, 24, 26, 0.7);
+	background: var(--options-dark-preview-background);
 }
 
 .preview-icon {
@@ -559,7 +549,7 @@ button {
 	place-items: center;
 	border-radius: 14px;
 	background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-	color: white;
+	color: var(--options-white);
 	font-size: 1.2rem;
 }
 
@@ -597,7 +587,7 @@ button {
 	justify-self: end;
 	padding: 10px 14px;
 	border-radius: 999px;
-	background: rgba(255, 255, 255, 0.6);
+	background: var(--options-status-background);
 	color: var(--accent-strong);
 	border: 1px solid var(--border);
 	opacity: 0;
