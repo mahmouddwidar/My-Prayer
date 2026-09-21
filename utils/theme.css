@@ -143,3 +143,41 @@
 	);
 	--sidebar-disabled-border: #d0d0d0;
 }
+
+[data-theme="light"] {
+	--popup-gradient: linear-gradient(
+		180deg,
+		rgba(255, 255, 255, 0.35),
+		rgba(255, 255, 255, 0)
+	);
+	--popup-shadow-lg: 0 1rem 3rem rgba(15, 23, 42, 0.1);
+	--popup-black: #172033;
+	--popup-accent: #ffc107;
+	--popup-text: rgb(23 32 51 / 85%);
+	--popup-background: #f8f3e8;
+	--popup-surface: rgba(255, 255, 255, 0.75);
+	--popup-surface-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+	--popup-progress-background: rgba(15, 23, 42, 0.1);
+	--popup-progress-shadow:
+		inset 0 1px 2px rgba(15, 23, 42, 0.1), 0 1px rgba(255, 255, 255, 0.5);
+	--popup-progress-gradient: linear-gradient(to right, #ffd666, #ffc107);
+	--popup-progress-bar-shadow:
+		inset 0 1px 1px rgba(255, 255, 255, 0.45), 0 1px 2px rgba(15, 23, 42, 0.16);
+	--popup-toggle-shadow: inset 0 1px 3px rgba(15, 23, 42, 0.16);
+	--popup-thumb-shadow: 0 1px 3px rgba(15, 23, 42, 0.16);
+	--popup-white: white;
+	--popup-tooltip-background: rgba(0, 0, 0, 0.8);
+	--popup-error-gradient: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.82),
+		rgba(255, 255, 255, 0.55)
+	);
+	--popup-error-border: rgba(15, 23, 42, 0.12);
+	--popup-error-shadow:
+		0 16px 40px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+	--popup-error-text: #172033;
+	--popup-error-text-shadow: 0 1px 2px rgba(255, 255, 255, 0.35);
+	--popup-button-gradient: linear-gradient(180deg, #ffd666, #ffc107);
+	--popup-button-shadow: 0 6px 16px rgba(15, 23, 42, 0.12);
+	--popup-button-hover-shadow: 0 8px 18px rgba(15, 23, 42, 0.16);
+}
