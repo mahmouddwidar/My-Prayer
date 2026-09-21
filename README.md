@@ -1,118 +1,83 @@
-# My Prayer Extension
-
 <div align="center">
-  <img src="imgs/icon-256.png" alt="My Prayer Logo" width="128" style="margin-bottom: 20px;">
-  
-  <h3>Your Personal Prayer Companion</h3>
-  
-  <div style="display: flex; justify-content: center; gap: 20px; margin: 30px 0;">
-    <div>
-      <img src="imgs/media/Main.png" alt="My Prayer Main Interface" width="500" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-      <p><em>Main Interface</em></p>
-    </div>
-    <div>
-      <img src="imgs/media/Sidebar - Adhkar.png" alt="My Prayer Sidebar" width="500" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-      <p><em>Azkar Sidebar</em></p>
-    </div>
-  </div>
+
+<img src="imgs/icon-256.png" alt="My Prayer logo" width="96">
+
+# My Prayer
+
+**Your personal prayer companion, right in your browser.**
+
+Prayer times for your location, morning & evening adhkar, and reminders for the prayers you choose.
+
+[![Get it on Microsoft Edge](https://img.shields.io/badge/Get_it_on-Microsoft_Edge-0078D7?logo=microsoftedge&logoColor=white)](https://microsoftedge.microsoft.com/addons/detail/my-prayer/kfifklbdcpifbkeebmieolhfnkkepbgk?hl=en-US)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+<img src="https://github.com/user-attachments/assets/f61cfb5e-5ed8-47ea-a2d3-0997075c8634" alt="My Prayer popup showing the next prayer, the time remaining and today's Hijri date" width="820">
+
 </div>
 
-<p align="center">
-  <strong>My Prayer</strong> is a browser extension designed to provide prayer times based on your current geographical location.
-</p>
+## Features
 
-## ✨ Features
+- **Next prayer at a glance:** the popup shows the previous and next prayer, a countdown, a progress bar and today's Hijri date.
+- **Full prayer times in a side panel:** see every prayer of the day, with the upcoming one highlighted.
+- **Morning & evening adhkar:** a counter for each zekr, a reset button, and the virtue (fadl) of each one.
+- **Reminders you control:** turn notifications on, then choose exactly which prayers should notify you.
+- **Your location:** detected automatically, or set it by searching for your city. The calculation method is picked for your location.
+- **Light, dark or system theme:** applied to every page at once.
+- **Free and open source** under the MIT license.
 
-### 🕒 Prayer Times
-- **Automatic Prayer Times**: Fetches prayer timings based on your geographic location
-- **Multiple Calculation Methods**: Get calculation method based on your geographic location
-- **Prayer Times Sidebar**: Access a comprehensive view of all prayer times with highlighted upcoming prayer
+## Screenshots
 
-### 📅 Calendar & Notifications
-- **Hijri Date**: Displays Hijri calendars for convenience
-- **Prayer Notifications**: Receive notifications when prayer times occur (toggle on/off)
+<table>
+  <tr>
+    <td width="50%"><img src="https://github.com/user-attachments/assets/98641390-a07c-4ec6-b8bb-104f3d7a81f0" alt="Light and dark themes"></td>
+    <td width="50%"><img src="https://github.com/user-attachments/assets/22a5f48b-8bde-4ee1-b4dd-89f8293b49fe" alt="Choose which prayers send a reminder"></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="https://github.com/user-attachments/assets/f4a32093-6827-44b5-90ef-d38a2b233934" alt="Prayer times and adhkar in the side panel"></td>
+    <td width="50%"><img src="https://github.com/user-attachments/assets/a238a113-c323-4228-a11c-f1d76638d7a3" alt="Search for your city"></td>
+  </tr>
+</table>
 
-### 📿 Adhkar
-- **Morning and Evening Adhkar**: 
-  - Complete collection of morning and evening remembrances
-  - Counter for each zekr to track your daily recitations
-  - Reset functionality for counters
-  - Virtues (fadl) of each zekr displayed
-  - Easy navigation between different adhkar
+## Install
 
-## 🚀 Planned Features
+**Microsoft Edge:** get it from the [Edge Add-ons store](https://microsoftedge.microsoft.com/addons/detail/my-prayer/kfifklbdcpifbkeebmieolhfnkkepbgk?hl=en-US).
 
-### ⏰ Prayer Features
-- **Adhan to Iqamah Timer**: A timer between Adhan and Iqamah to help users prepare for prayers
-- **Extended Prayer Times**:
-  - Addition of midnight prayer time
+**Chrome and other Chromium browsers (manual install):**
 
-### ⚙️ Customization
-- **Comprehensive Options Page**:
-  - Customizable prayer notifications (enable/disable for specific prayers)
-  - Prayer time calculation method selection
-  - General extension preferences
-- **Theme Customization**:
-  - Light/Dark theme toggle
+1. [Download the ZIP](https://github.com/mahmouddwidar/My-Prayer/archive/refs/heads/main.zip) and unzip it, or clone the repo.
+2. Open the extensions page (`chrome://extensions`, or `edge://extensions` in Edge).
+3. Turn on **Developer mode**.
+4. Click **Load unpacked** and select the folder that contains `manifest.json`.
 
-## 📥 Installation
+There is no build step.
 
-1. Download the extension files from [here](https://github.com/mahmouddwidar/My-Prayer/archive/refs/heads/main.zip) or clone the repo
-2. Open your browser and go to the extensions management page (e.g., chrome://extensions/ for Chrome)
-3. Enable Developer mode
-4. Click on "Load unpacked" and select the downloaded extension folder
+## Privacy
 
-## 🌐 Download
+- Your settings are stored locally in your browser.
+- When you search for a city, the text you type is sent to [OpenStreetMap Nominatim](https://nominatim.openstreetmap.org/) to find matching places.
+- Prayer times are fetched for your saved coordinates.
 
-You can download the My Prayer extension from:
-- **Edge:** [My Prayer on Microsoft Edge](https://microsoftedge.microsoft.com/addons/detail/my-prayer/kfifklbdcpifbkeebmieolhfnkkepbgk?hl=en-US)
+## Roadmap
 
-## 📝 Usage
+- [ ] Adhan to Iqamah timer
+- [ ] Midnight time
+- [ ] Choose the calculation method manually
+- [ ] More color themes
 
-Once installed, the extension automatically detects your location to provide prayer times. You can view the prayer times, dates, and get calculation methods based on your location.
+Have an idea? [Open an issue](https://github.com/mahmouddwidar/My-Prayer/issues).
 
-## 📋 Changelog
+## Contributing
 
-### Version 1.2.1 (Latest) - Bug Fixes & Improvements
-**Fixed:**
-- Resolved an issue where remaining time for next prayer wasn't displaying correctly
-- Addressed notification preferences by changing default setting to disabled
+Contributions are welcome: report bugs, suggest features, or send a pull request.
 
-**Improved:**
-- Enhanced time display accuracy by showing remaining seconds in countdown.
-- Added UX improvement with new "Back to Top" button in sidebar for easier navigation.
+- The extension is plain JavaScript, HTML and CSS. To try your changes, load the folder as an unpacked extension (see above) and reload it after each edit.
+- All colors live in `utils/theme.css` as CSS variables, and the theme is applied by `utils/theme.js` through the `data-theme` attribute on `<html>`. Use the existing variables instead of hardcoding colors.
+- Design guidelines and UI components are in the [Figma file](https://www.figma.com/design/bgkUGMAzLRUbiL1w3A9s3f/My-Prayer-Extension?node-id=0-1&m=dev&t=h11LdWPBNSoe6juB-1). Please keep new screens consistent with it.
 
-----
+## Changelog
 
-### Version 1.2.0
-#### 🆕 New Features
-- **Prayer Times Sidebar**
-  - Comprehensive view of all prayer times
-  - Highlighted upcoming prayer time
-  - Easy access to detailed prayer schedule
+See [CHANGELOG.md](CHANGELOG.md).
 
-- **Morning and Evening Adhkar**
-  - Complete collection of morning and evening remembrances
-  - Counter system for tracking zekr recitations
-  - Reset functionality for counters
-  - Virtues (fadl) of each zekr
-  - User-friendly interface for adhkar navigation
+## License
 
-## 🤝 Contribution
-
-The repository is open for contributions! Feel free to:
-- Fork this project
-- Suggest new features
-- Report issues
-- Submit pull requests
-
-### 🎨 Design Resources
-- **Figma Design**: Check out our [Figma Design File](https://www.figma.com/design/bgkUGMAzLRUbiL1w3A9s3f/My-Prayer-Extension?node-id=0-1&m=dev&t=h11LdWPBNSoe6juB-1) for design guidelines and UI components
-- Follow the design system and components when contributing new features
-- Maintain visual consistency across the extension
-
-All contributions are welcome!
-
-## 📄 License
-
-This project is licensed under the MIT License.
+Released under the [MIT License](LICENSE).
